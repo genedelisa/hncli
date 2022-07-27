@@ -1,0 +1,19 @@
+name: Xcode Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build macOS
+        run: xcodebuild -scheme createMIDI  -destination 'platform=macOS'
+      - name: Run macOS tests
+        run: xcodebuild -scheme createMIDI -destination 'platform=macOS' test

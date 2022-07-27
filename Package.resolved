@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "gdterminalcolor",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/genedelisa/GDTerminalColor.git",
+      "state" : {
+        "revision" : "721fc5ce8983ea3dfa65bc7945f8d3217e16bfb5",
+        "version" : "0.1.15"
+      }
+    },
+    {
+      "identity" : "swift-argument-parser",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-argument-parser.git",
+      "state" : {
+        "revision" : "f3c9084a71ef4376f2fabbdf1d3d90a49f1fabdb",
+        "version" : "1.1.2"
+      }
+    },
+    {
+      "identity" : "swift-docc-plugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-docc-plugin",
+      "state" : {
+        "revision" : "3303b164430d9a7055ba484c8ead67a52f7b74f6",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 2
+}

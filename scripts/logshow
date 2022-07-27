@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+/usr/bin/log show --style compact --info --debug --last 1h --predicate '(subsystem == "com.rockhoppertech.createMIDI")'
+
+#/usr/bin/log show --style compact --info --debug --last 1h --predicate 'subsystem == "com.rockhoppertech.createMIDI" && eventMessage CONTAINS[c] "server"'
+
+#/usr/bin/log show --info --debug --predicate '(subsystem == "com.rockhoppertech.createMIDI") && (category == "UI")' --style compact

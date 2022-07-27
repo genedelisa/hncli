@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+# run interactively
+
+docker run --rm --privileged --interactive --tty \
+    --volume "$(pwd):/Sources" \
+    --workdir "/Sources" \
+    swiftlang/swift:nightly-focal

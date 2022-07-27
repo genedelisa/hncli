@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+# https://apple.github.io/swift-docc-plugin/documentation/swiftdoccplugin/
+
+xcrun swift package generate-documentation
+
+xcrun swift package --disable-sandbox preview-documentation
+
+# in another window:
+# open http://localhost:8000/documentation/createMIDI
+
+exit ${status}
