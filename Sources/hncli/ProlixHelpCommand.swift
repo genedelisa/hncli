@@ -1,13 +1,11 @@
 // File:    Sources
-// Project: createMIDI
-// Package: createMIDI
-// Product: createMIDI
+// Project: hncli
 //
 // Created by Gene De Lisa on 6/13/22
 //
 // Using Swift 5.0
 // Running macOS 12.4
-// Github: https://github.com/genedelisa/createMIDI
+// Github: https://github.com/genedelisa/hncli
 // Product: https://rockhoppertech.com/
 //
 // Follow me on Twitter: @GeneDeLisaDev

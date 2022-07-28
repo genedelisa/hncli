@@ -43,8 +43,9 @@ extension MainCommand {
         """
         )
         
-        // defined in MainCommand
+        // Options which are defined in MainCommand
         @OptionGroup() var options: Options
+        
         
         func run() async throws {
             
@@ -55,13 +56,8 @@ extension MainCommand {
             }
             
             let api = HackerNewsAPIService()
-            
-            if options.verbose {
-                api.verbose = true
-            }
-            if options.displayJSON {
-                api.displayJSON = true
-            }
+            api.verbose = options.verbose
+            api.displayJSON = options.displayJSON
             
             let dateFormat: DateFormatter = {
                 let dateFormat = DateFormatter()
@@ -73,14 +69,15 @@ extension MainCommand {
             
             do {
                 if options.verbose {
-                    Logger.command.info("Fetchng top stories")
-                    print("🔭 Fetchng top stories")
+                    Logger.command.info("Fetchng top stories limited to \(options.fetchLimit, privacy: .public)")
+                    print("🔭 Fetchng top stories limited to \(options.fetchLimit)")
                 }
                 
                 // returns an array of Items
-                let stories = try await api.fetchTopStories()
+                // let stories = try await api.fetchTopStories(options.fetchLimit)
+                let stories = try await api.fetchBestStories(options.fetchLimit)
                 
-                Logger.command.info("story count: \(stories.count)")
+                Logger.command.info("story count: \(stories.count, privacy: .public)")
                 
                 if options.verbose {
                     let msg = "☞ There are \(stories.count) stories"
@@ -90,44 +87,57 @@ extension MainCommand {
                 for story in stories {
                     
                     if options.verbose {
-                        Logger.command.info("\(story)")
+                        Logger.command.info("\(story, privacy: .public)\n")
                     }
                     
-                    if let s = story.type {
-                        ColorConsole.consoleMessage("Item type: \(s)")
-                    }
-                    
-                    if let s = story.time {
-                        let t = Date(timeIntervalSince1970: TimeInterval(s))
-                        let ts = dateFormat.string(from: t)
-                        //Color256.print(ts, fg: .green1, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(ts)
-                    }
-                    
-                    if let s = story.title {
-                        //Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(s)
-                    }
-                    
-                    if let s = story.by {
-                        //Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(s)
-                    }
-                    
-                    if let s = story.text {
-                        ColorConsole.consoleMessage(s)
-                    }
-                    
-                    if let s = story.url {
-                        //Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(s)
+                    if options.displayBrief {
+                        if let s = story.title {
+                            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+                            ColorConsole.consoleMessage(s)
+                        }
+                        if let s = story.url {
+                            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+                            ColorConsole.consoleMessage(s)
+                        }
+                        
+                    } else {
+                        
+                        if let s = story.type {
+                            ColorConsole.consoleMessage("Item type: \(s)")
+                        }
+                        
+                        if let s = story.time {
+                            let t = Date(timeIntervalSince1970: TimeInterval(s))
+                            let ts = dateFormat.string(from: t)
+                            // Color256.print(ts, fg: .green1, bg: .darkBlue, att: [.italic])
+                            ColorConsole.consoleMessage(ts)
+                        }
+                        
+                        if let s = story.title {
+                            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+                            ColorConsole.consoleMessage(s)
+                        }
+                        
+                        if let s = story.by {
+                            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+                            ColorConsole.consoleMessage(s)
+                        }
+                        
+                        if let s = story.text {
+                            ColorConsole.consoleMessage(s)
+                        }
+                        
+                        if let s = story.url {
+                            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+                            ColorConsole.consoleMessage(s)
+                        }
                     }
                     
                     print()
                 }
                 
             } catch {
-                Logger.command.error("\(error.localizedDescription)")
+                Logger.command.error("\(#function) \(error.localizedDescription, privacy: .public)")
                 ColorConsole.errorMessage(error.localizedDescription)
             }
         }

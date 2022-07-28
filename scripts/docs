@@ -7,6 +7,6 @@ xcrun swift package generate-documentation
 xcrun swift package --disable-sandbox preview-documentation
 
 # in another window:
-# open http://localhost:8000/documentation/createMIDI
+# open http://localhost:8000/documentation/hncli
 
 exit ${status}

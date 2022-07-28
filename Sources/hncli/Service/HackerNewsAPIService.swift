@@ -18,136 +18,17 @@
 //
 // https://opensource.org/licenses/MIT
 
-
-import Foundation
-import Combine
 import os.log
-
-struct HackerNewsEndpooint {
-    
-    static func createStoryGETURLRequest(id: Int) throws -> URLRequest {
-        Logger.service.trace("\(#function)")
-                
-        var uc = URLComponents()
-        uc.scheme = "https"
-        uc.host = "hacker-news.firebaseio.com"
-        uc.path = "/v0/item/\(id).json"
-        
-        // eg "https://hacker-news.firebaseio.com/v0/item/32186203.json")
-        
-        guard let requestUrl = uc.url else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        Logger.service.debug("story GET request url: \(requestUrl, privacy: .public)")
-        
-        var urlRequest = URLRequest(url: requestUrl)
-        urlRequest.httpMethod = "GET"
-        urlRequest.allHTTPHeaderFields = [
-            "Accept": "application/json",
-            "Content-Type": "application/json; charset=UTF-8"
-        ]
-
-        return urlRequest
-    }
-    
-    static func createNewStoriesGETURLRequest() throws -> URLRequest {
-            
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/newstories.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        
-        var urlRequest = URLRequest(url: requestUrl)
-        urlRequest.httpMethod = "GET"
-        urlRequest.allHTTPHeaderFields = [
-            "Accept": "application/json",
-            "Content-Type": "application/json; charset=UTF-8"
-        ]
-
-        return urlRequest
-    }
-    
-    static func createTopStoriesGETURLRequest() throws -> URLRequest {
-            
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/topstories.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        
-        var urlRequest = URLRequest(url: requestUrl)
-        urlRequest.httpMethod = "GET"
-        urlRequest.allHTTPHeaderFields = [
-            "Accept": "application/json",
-            "Content-Type": "application/json; charset=UTF-8"
-        ]
-
-        return urlRequest
-    }
-    
-    static func userGETURLRequest(id: String) throws -> URLRequest {
-        
-        Logger.service.trace("\(#function)")
-        
-        var uc = URLComponents()
-        uc.scheme = "https"
-        uc.host = "hacker-news.firebaseio.com"
-        uc.path = "/v0/user/\(id).json"
-        
-        // For example: https://hacker-news.firebaseio.com/v0/user/jl.json?print=pretty
-        
-        guard let requestUrl = uc.url else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        
-        Logger.service.debug("user request url: \(requestUrl, privacy: .public)")
-        
-        var urlRequest = URLRequest(url: requestUrl)
-        urlRequest.httpMethod = "GET"
-        urlRequest.allHTTPHeaderFields = [
-            "Accept": "application/json",
-            "Content-Type": "application/json; charset=UTF-8"
-        ]
-        
-        return urlRequest
-    }
-    
-///    Stories, comments, jobs, Ask HNs and even polls are just items.
-///    They're identified by their ids, which are unique integers, and live under /v0/item/<id>.
-    static func itemGETURLRequest(id: Int) throws -> URLRequest {
-        
-        Logger.service.trace("\(#function)")
-        
-        var uc = URLComponents()
-        uc.scheme = "https"
-        uc.host = "hacker-news.firebaseio.com"
-        uc.path = "/v0/item/\(id).json"
-
-        //comment: https://hacker-news.firebaseio.com/v0/item/2921983.json?print=pretty
-        
-        guard let requestUrl = uc.url else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        
-        Logger.service.debug("user request url: \(requestUrl, privacy: .public)")
-        
-        var urlRequest = URLRequest(url: requestUrl)
-        urlRequest.httpMethod = "GET"
-        urlRequest.allHTTPHeaderFields = [
-            "Accept": "application/json",
-            "Content-Type": "application/json; charset=UTF-8"
-        ]
-        
-        return urlRequest
-    }
-
-}
-
+import Foundation
 
 @available(iOS 14.0, *)
 @available(macOS 12.0, *)
 public class HackerNewsAPIService {
-    let logger = Logger.service //Logger(subsystem: "com.rockhoppertech.API", category: "Service")
+    let logger = Logger.service // Logger(subsystem: "com.rockhoppertech.API", category: "Service")
 
     public var verbose = false
     public var displayJSON = false
+   // public var fetchLimit = 500
 
     
     // static let apiKey = ""
@@ -168,39 +49,81 @@ public class HackerNewsAPIService {
     func fetchNewStoryIDs() async throws -> [Int] {
         
         let urlRequest = try HackerNewsEndpooint.createNewStoriesGETURLRequest()
-        
-        do {
-            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        return try await fetchIDs(urlRequest: urlRequest)
 
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw HackerNewsAPIError.invalidResponse(reason: "Invalid Response")
-            }
-
-            if httpResponse.statusCode != 200 {
-                throw HackerNewsAPIError.httpStatusCode(reason: "Response status code wrong",
-                                                        status: httpResponse.statusCode)
-            }
-
-            let decoder = newJSONDecoder()
-            do {
-                let ids = try decoder.decode([Int].self, from: data)
-                Logger.service.debug("Number of IDs: \(ids.count, privacy: .public)")
-                return ids
-            } catch {
-                self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
-                throw HackerNewsAPIError.decoding(reason: "Could not decode response: \(error.localizedDescription)")
-            }
-
-        } catch {
-            self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
-            throw HackerNewsAPIError.invalidResponse(reason: "bad response \(error.localizedDescription)")
-        }
+//        do {
+//            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+//
+//            guard let httpResponse = response as? HTTPURLResponse else {
+//                throw HackerNewsAPIError.invalidResponse(reason: "Invalid Response")
+//            }
+//
+//            if httpResponse.statusCode != 200 {
+//                throw HackerNewsAPIError.httpStatusCode(reason: "Response status code wrong",
+//                                                        status: httpResponse.statusCode)
+//            }
+//
+//            let decoder = newJSONDecoder()
+//            do {
+//                let ids = try decoder.decode([Int].self, from: data)
+//                Logger.service.debug("Number of IDs: \(ids.count, privacy: .public)")
+//                return ids
+//            } catch {
+//                self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
+//                throw HackerNewsAPIError.decoding(reason: "Could not decode response: \(error.localizedDescription)")
+//            }
+//
+//        } catch {
+//            self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
+//            throw HackerNewsAPIError.invalidResponse(reason: "Bad response: \(error.localizedDescription)")
+//        }
 
     }
     
     func fetchTopStoryIDs() async throws -> [Int] {
         
         let urlRequest = try HackerNewsEndpooint.createNewStoriesGETURLRequest()
+        return try await fetchIDs(urlRequest: urlRequest)
+
+//        do {
+//            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+//
+//            guard let httpResponse = response as? HTTPURLResponse else {
+//                throw HackerNewsAPIError.invalidResponse(reason: "Invalid Response")
+//            }
+//
+//            if httpResponse.statusCode != 200 {
+//                throw HackerNewsAPIError.httpStatusCode(reason: "Response status code wrong",
+//                                                        status: httpResponse.statusCode)
+//            }
+//
+//            let decoder = newJSONDecoder()
+//            do {
+//                let ids = try decoder.decode([Int].self, from: data)
+//                Logger.service.debug("Number of IDs: \(ids.count, privacy: .public)")
+//                return ids
+//
+//            } catch {
+//                self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
+//                throw HackerNewsAPIError.decoding(reason: "Could not decode response: \(error.localizedDescription)")
+//            }
+//
+//        } catch {
+//            Logger.service.debug("\(#function)")
+//            //print("\(#function) \(error)")
+//            Logger.service.error("Error: \(error.localizedDescription, privacy: .public)")
+//            throw HackerNewsAPIError.invalidResponse(reason: "Bad response: \(error.localizedDescription)")
+//        }
+
+    }
+    
+    func fetchBestStoryIDs() async throws -> [Int] {
+        
+        let urlRequest = try HackerNewsEndpooint.createBestStoriesGETURLRequest()
+        return try await fetchIDs(urlRequest: urlRequest)
+    }
+    
+    func fetchIDs(urlRequest: URLRequest) async throws -> [Int] {
 
         do {
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
@@ -226,11 +149,15 @@ public class HackerNewsAPIService {
             }
 
         } catch {
-            self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
-            throw HackerNewsAPIError.invalidResponse(reason: "bad response \(error.localizedDescription)")
+            Logger.service.debug("\(#function)")
+            // print("\(#function) \(error)")
+            Logger.service.error("Error: \(error.localizedDescription, privacy: .public)")
+            throw HackerNewsAPIError.invalidResponse(reason: "Fetching IDs: \(error.localizedDescription)")
         }
 
     }
+
+
     
 //    func fetchStory(id: Int) async throws -> Story {
 //        self.logger.trace("\(#function)")
@@ -410,8 +337,8 @@ public class HackerNewsAPIService {
             }
             
         } catch {
-            self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
-            throw HackerNewsAPIError.invalidResponse(reason: "bad response \(error.localizedDescription)")
+            Logger.service.error("Error: \(error.localizedDescription, privacy: .public)")
+            throw HackerNewsAPIError.invalidResponse(reason: "Fetching item: \(error.localizedDescription)")
         }
 
     }
@@ -444,34 +371,60 @@ public class HackerNewsAPIService {
 //        return stories
 //    }
     
-    public func fetchTopStories() async throws -> [Item] {
+    public func fetchBestStories(_ fetchLimit: Int = 500) async throws -> [Item] {
         var items: [Item] = []
 
         do {
             if verbose {
-                print("getting top story IDs")
+                print("Fetching best story IDs")
             }
-            let itemIDs = try await fetchTopStoryIDs()
-            items = try await self.fetchItems(itemIDs: itemIDs)
+            let itemIDs = try await fetchBestStoryIDs()
+            items = try await self.fetchItems(itemIDs: itemIDs, fetchLimit: fetchLimit)
             
         } catch {
-            print(error)
+            Logger.service.error("\(#function) \(error)")
+            throw HackerNewsAPIError.invalidResponse(reason: "\(error.localizedDescription)")
+        }
+        
+        return items
+    }
+    public func fetchTopStories(_ fetchLimit: Int = 500) async throws -> [Item] {
+        var items: [Item] = []
+
+        do {
+            if verbose {
+                print("Fetching top story IDs")
+            }
+            let itemIDs = try await fetchTopStoryIDs()
+            items = try await self.fetchItems(itemIDs: itemIDs, fetchLimit: fetchLimit)
+            
+        } catch {
+            Logger.service.error("\(#function) \(error)")
+            throw HackerNewsAPIError.invalidResponse(reason: "\(error.localizedDescription)")
         }
         
         return items
     }
     
-    public func fetchItems(itemIDs: [Int]) async throws -> [Item] {
+    public func fetchItems(itemIDs: [Int], fetchLimit: Int) async throws -> [Item] {
         
-        var items:[Item] = []
+        var items: [Item] = []
         
         if verbose {
-            print("Fetching \(itemIDs.count) items")
+            print("Fetching \(fetchLimit) of \(itemIDs.count) items")
         }
+
+        var index = 0
         for itemID in itemIDs {
             do {
                 let item = try await self.fetchItem(id: itemID)
                 items.append(item)
+
+                index += 1
+                if index == fetchLimit {
+                    break
+                }
+                
                 if verbose {
                     if let s = item.title {
                         print("\(s)\n")
@@ -483,69 +436,7 @@ public class HackerNewsAPIService {
         }
         return items
     }
-
     
-    
-    
-    
-    
-    
-    
-//    func getStories() async throws -> [Story] {
-//        self.logger.trace("\(#function)")
-//
-//        let url = URL(string: "https://hacker-news.firebaseio.com/v0/item/32186203.json")
-//        guard let requestUrl = url else {
-//            throw HackerNewsAPIError.invalidURL(reason: "bad request url")
-//        }
-//        Logger.service.debug("GET request url: \(requestUrl, privacy: .public)")
-//
-//        var urlRequest = URLRequest(url: requestUrl)
-//        urlRequest.httpMethod = "GET"
-//        urlRequest.allHTTPHeaderFields = ["Accept": "application/json"]
-//
-//        do {
-//            let (data, response) = try await URLSession.shared.data(for: urlRequest)
-//
-//            guard let httpResponse = response as? HTTPURLResponse else {
-//                throw HackerNewsAPIError.invalidResponse(reason: "Invalid Response")
-//            }
-//
-//            if httpResponse.statusCode != 200 {
-//                throw HackerNewsAPIError.httpStatusCode(reason: "Response is not good", status: httpResponse.statusCode)
-//            }
-//
-//            guard let json = String(data: data, encoding: .utf8) else {
-//               // self.logger.debug("json: \(json, privacy: .public)")
-//                fatalError()
-//            }
-//
-//            if let data = json.data(using: .utf8) {
-//                let decoder = JSONDecoder()
-//                decoder.dateDecodingStrategy = .iso8601
-//                decoder.keyDecodingStrategy = .convertFromSnakeCase
-//                do {
-//                    return try decoder.decode([Story].self, from: data)
-//                } catch {
-//                    self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
-//                    throw HackerNewsAPIError.decoding(reason: "Could not decode response: \(error.localizedDescription)")
-//                }
-//            }
-//
-//            throw HackerNewsAPIError.decoding(reason: "Could not decode response")
-//
-//
-//
-//
-//        } catch {
-//            self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
-//            throw HackerNewsAPIError.invalidResponse(reason: "bad response \(error.localizedDescription)")
-//        }
-//
-//
-//
-//    }
-
 
 //    func makePOSTUserRequest(post: Post) async throws -> Story {
 //        self.logger.trace("\(#function)")
@@ -600,67 +491,4 @@ public class HackerNewsAPIService {
 //
 //    }
 
-
-//    public func fetch(id: String) async throws -> Story {
-//        self.logger.trace("\(#function)")
-//
-//
-//        guard let url = try createGETUserRequest(id: id) else {
-//            throw HackerNewsAPIError.invalidURL(reason: "bad url")
-//        }
-//
-//        var urlRequest = URLRequest(url: url)
-//        urlRequest.httpMethod = "GET"
-//        urlRequest.allHTTPHeaderFields = ["Accept": "application/json"]
-//
-//        if let json = try await retrieveJSON(with: urlRequest) {
-//            return try decode(json: json)
-//        }
-//        throw HackerNewsAPIError.apiError(reason: "Could not fetch")
-//    }
-    
-    //Mark: Use Async/Await
-//    func getPosts() async throws -> String {
-//        let url = URL(string: "https://jsonplaceholder.typicode.com/posts")!
-//        let (data,_) = try await URLSession.shared.data(from: url)
-//        let string = String(data: data, encoding: .utf8) ?? ""
-//        return string
-//    }
-    
-    
-    
-    
-    
-    
-  
-    
-    
-    
-//    func get<T: Decodable>(generalType: T, completion: @escaping (Result<T, Error>) ) -> Void {
-//
-//        let task = session.dataTask(with: request){ (data, response, error) in
-//
-//            guard let data = data else {
-////                let err = error ?? ... some default error ...
-////                completion(.failure(err))
-//                return
-//            }
-//
-//            let result = Result {
-//                // You know you can call `decode` with it because it's Decodable
-//                try JSONDecoder().decode(T.self, from: data)
-//            }
-//            completion(result)
-//        }
-//        task.resume()
-//    }
-
-    
-    
-    
-    
-
-    
 }
-
-

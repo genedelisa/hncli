@@ -5,7 +5,7 @@
 //
 // Using Swift 5.0
 // Running macOS 12.4
-// Github: https://github.com/genedelisa/createMIDI
+// Github: https://github.com/genedelisa/hncli
 // Product: https://rockhoppertech.com/
 //
 // Follow me on Twitter: @GeneDeLisaDev
@@ -33,8 +33,7 @@ extension OSLog {
         if let s = Bundle.module.bundleIdentifier {
             return s
         }
-        //TODO: assign name
-        return "com.rockhoppertech.cmd"
+        return "com.rockhoppertech.hncli"
     }()
 
     public static let general = OSLog(subsystem: subsystem, category: "General")

@@ -40,8 +40,8 @@ extension MainCommand {
 
         @OptionGroup() var options: Options
 
-        //@Argument(help: ArgumentHelp(NSLocalizedString("Your account ID.", comment: "")))
-        //var accountID: String
+        // @Argument(help: ArgumentHelp(NSLocalizedString("Your account ID.", comment: "")))
+        // var accountID: String
 
         @Option(name: .shortAndLong, help: "Path to the thing")
         var thing: String?

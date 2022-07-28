@@ -51,10 +51,10 @@ https://github.com/HackerNews/API
 ## Usage
 
 ```shell
-xcrun swift run -- createMIDI
+xcrun swift run -- hncli
 
-xcrun swift run -- createMIDI  -h
-xcrun swift run -- createMIDI  --help
+xcrun swift run -- hncli  -h
+xcrun swift run -- hncli  --help
 
 
 ```
@@ -66,14 +66,14 @@ xcrun swift run -- createMIDI  --help
 
 ```
 sudo /usr/bin/log config --mode "level:default" --subsystem
-com.rockhoppertech.createMIDI
+com.rockhoppertech.hncli
 sudo /usr/bin/log config --mode "level:info" --subsystem
-com.rockhoppertech.createMIDI
+com.rockhoppertech.hncli
 sudo /usr/bin/log config --mode "level:debug" --subsystem
-com.rockhoppertech.createMIDI
+com.rockhoppertech.hncli
 
 sudo /usr/bin/log config --mode "level:debug,persist:debug" --subsystem
-com.rockhoppertech.createMIDI
+com.rockhoppertech.hncli
 
 
 
@@ -82,16 +82,16 @@ com.rockhoppertech.createMIDI
 ### See the logs
 
 ```
-log show --info --debug --predicate '(subsystem == "com.rockhoppertech.createMIDI")' --style compact
+log show --info --debug --predicate '(subsystem == "com.rockhoppertech.hncli")' --style compact
 log show --info --debug --predicate '(subsystem ==
-"com.rockhoppertech.createMIDI") && (category == "Service")'
+"com.rockhoppertech.hncli") && (category == "Service")'
 ```
 
 Or, in a separate window, stream the logs to stdout when you run the program.
 ```
-log stream --predicate '(subsystem == "com.rockhoppertech.createMIDI")' --type log --level debug --color always --style compact
+log stream --predicate '(subsystem == "com.rockhoppertech.hncli")' --type log --level debug --color always --style compact
 
-log stream --predicate '(subsystem == "com.rockhoppertech.createMIDI") && (category == "Service")' --type log --level debug --style json
+log stream --predicate '(subsystem == "com.rockhoppertech.hncli") && (category == "Service")' --type log --level debug --style json
 ```
 
 ### Logging References
@@ -147,23 +147,23 @@ Please read the [LICENSE](LICENSE) for details.
 <!-- Markdown Reference Links & Images -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/genedelisa/createMIDI.svg?style=flat
-[contributors-url]: https://github.com/genedelisa/createMIDI/graphs/contributors
+[contributors-shield]: https://img.shields.io/github/contributors/genedelisa/hncli.svg?style=flat
+[contributors-url]: https://github.com/genedelisa/hncli/graphs/contributors
 
-[forks-shield]: https://img.shields.io/github/forks/genedelisa/createMIDI.svg?style=flat
-[forks-url]: https://github.com/genedelisa/createMIDI/network/members
+[forks-shield]: https://img.shields.io/github/forks/genedelisa/hncli.svg?style=flat
+[forks-url]: https://github.com/genedelisa/hncli/network/members
 
-[stars-shield]: https://img.shields.io/github/stars/genedelisa/createMIDI.svg?style=flat
-[stars-url]: https://github.com/genedelisa/createMIDI/stargazers
+[stars-shield]: https://img.shields.io/github/stars/genedelisa/hncli.svg?style=flat
+[stars-url]: https://github.com/genedelisa/hncli/stargazers
 
-[issues-shield]: https://img.shields.io/github/issues/genedelisa/createMIDI.svg?style=flat
-[issues-url]: https://github.com/genedelisa/createMIDI/issues
+[issues-shield]: https://img.shields.io/github/issues/genedelisa/hncli.svg?style=flat
+[issues-url]: https://github.com/genedelisa/hncli/issues
 
-[downloads-shield]:https://img.shields.io/github/downloads/genedelisa/createMIDI/total
-[downloads-url]: https://github.com/genedelisa/createMIDI/releases/
+[downloads-shield]:https://img.shields.io/github/downloads/genedelisa/hncli/total
+[downloads-url]: https://github.com/genedelisa/hncli/releases/
 
-[license-shield]: https://img.shields.io/github/license/genedelisa/createMIDI.svg?style=flat
-[license-url]: https://github.com/genedelisa/createMIDI/blob/main/LICENSE
+[license-shield]: https://img.shields.io/github/license/genedelisa/hncli.svg?style=flat
+[license-url]: https://github.com/genedelisa/hncli/blob/main/LICENSE
 
 [MIT-license-wiki-url]:https://en.wikipedia.org/wiki/MIT_License
 
@@ -176,27 +176,27 @@ Please read the [LICENSE](LICENSE) for details.
 [twitter-shield]:https://img.shields.io/twitter/follow/GeneDeLisaDev.svg?style=social
 [twitter-url]: https://twitter.com/GeneDeLisaDev
 
-[build-status-shield]:https://travis-ci.org/genedelisa/createMIDI.svg
-[build-status-url]:https://travis-ci.org/genedelisa/createMIDI
-[travis-status-url]:https://img.shields.io/travis/com/genedelisa/createMIDI?style=for-the-badge
-[circleci-status-url]:https://img.shields.io/circleci/build/github/genedelisa/createMIDI
+[build-status-shield]:https://travis-ci.org/genedelisa/hncli.svg
+[build-status-url]:https://travis-ci.org/genedelisa/hncli
+[travis-status-url]:https://img.shields.io/travis/com/genedelisa/hncli?style=for-the-badge
+[circleci-status-url]:https://img.shields.io/circleci/build/github/genedelisa/hncli
 
-[github-tag-shield]:https://img.shields.io/github/tag/genedelisa/createMIDI.svg
-[github-tag-url]:https://github.com/genedelisa/createMIDI/
+[github-tag-shield]:https://img.shields.io/github/tag/genedelisa/hncli.svg
+[github-tag-url]:https://github.com/genedelisa/hncli/
 
-[github-release-shield]:https://img.shields.io/github/release/genedelisa/createMIDI.svg
-[github-release-url]:https://github.com/genedelisa/createMIDI/
+[github-release-shield]:https://img.shields.io/github/release/genedelisa/hncli.svg
+[github-release-url]:https://github.com/genedelisa/hncli/
 
-[github-version-shield]:https://badge.fury.io/gh/genedelisa%2FcreateMIDI
-[github-version-url]:https://github.com/genedelisa/createMIDI
+[github-version-shield]:https://badge.fury.io/gh/genedelisa%2Fhncli
+[github-version-url]:https://github.com/genedelisa/hncli
 
-[github-last-commit]:https://img.shields.io/github/last-commit/genedelisa/createMIDI
+[github-last-commit]:https://img.shields.io/github/last-commit/genedelisa/hncli
 
-[github-issues]:https://img.shields.io/github/issues-raw/genedelisa/createMIDI
-[github-closed-issues]:https://img.shields.io/github/issues-closed-raw/genedelisa/createMIDI
+[github-issues]:https://img.shields.io/github/issues-raw/genedelisa/hncli
+[github-closed-issues]:https://img.shields.io/github/issues-closed-raw/genedelisa/hncli
 
-[github-stars-shield]:https://img.shields.io/github/stars/genedelisa/createMIDI.svg?style=social&label=Star&maxAge=2592000
-[github-stars-url]:https://github.com/genedelisa/createMIDI/stargazers/
+[github-stars-shield]:https://img.shields.io/github/stars/genedelisa/hncli.svg?style=social&label=Star&maxAge=2592000
+[github-stars-url]:https://github.com/genedelisa/hncli/stargazers/
 
 [swift5-shield]:https://img.shields.io/badge/swift5-compatible-4BC51D.svg?style=flat
 [swift5-url]:https://developer.apple.com/swift
@@ -217,7 +217,7 @@ Please read the [LICENSE](LICENSE) for details.
 [stackoverflow-shield]:https://stackoverflow-badge.vercel.app/?userID=409891
 [stackoverflow-url]:https://stackoverflow.com/users/409891/gene-de-lisa
 
-[github-pages]:https://genedelisa.github.io/createMIDI/
+[github-pages]:https://genedelisa.github.io/hncli/
 
 [blog-post-url]:http://www.rockhoppertech.com/blog/
 
@@ -230,14 +230,14 @@ Please read the [LICENSE](LICENSE) for details.
 
 
 
-[xcodebuild-shield]:https://github.com/genedelisa/createMIDI/actions/workflows/xcodebuild.yml/badge.svg
-[xcodebuild-url]:https://github.com/genedelisa/createMIDI/actions/workflows/xcodebuild.yml
+[xcodebuild-shield]:https://github.com/genedelisa/hncli/actions/workflows/xcodebuild.yml/badge.svg
+[xcodebuild-url]:https://github.com/genedelisa/hncli/actions/workflows/xcodebuild.yml
 
-[tweet-shield]:https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fgenedelisa%2createMIDI
-[tweet-url]:https://twitter.com/intent/tweet?text=Cool:&url=https%3A%2F%2Fgithub.com%2Fgenedelisa%2FcreateMIDI
+[tweet-shield]:https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fgenedelisa%2hncli
+[tweet-url]:https://twitter.com/intent/tweet?text=Cool:&url=https%3A%2F%2Fgithub.com%2Fgenedelisa%2Fhncli 
 
-[packageindex-platforms-url]:https://swiftpackageindex.com/genedelisa/createMIDI%2Fbadge%3Ftype%3Dplatforms
-[packageindex-platforms-shield]:https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fgenedelisa%2FcreateMIDI%2Fbadge%3Ftype%3Dplatforms
+[packageindex-platforms-url]:https://swiftpackageindex.com/genedelisa/hncli%2Fbadge%3Ftype%3Dplatforms
+[packageindex-platforms-shield]:https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fgenedelisa%2Fhncli%2Fbadge%3Ftype%3Dplatforms
 
-[packageindex-swiftversions-url]:https://swiftpackageindex.com/genedelisa/createMIDI%2Fbadge%3Ftype%3Dswift-versions
-[packageindex-swiftversions-shield]:https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fgenedelisa%2FcreateMIDI%2Fbadge%3Ftype%3Dswift-versions
+[packageindex-swiftversions-url]:https://swiftpackageindex.com/genedelisa/hncli%2Fbadge%3Ftype%3Dswift-versions
+[packageindex-swiftversions-shield]:https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fgenedelisa%2Fhncli%2Fbadge%3Ftype%3Dswift-versions

@@ -92,9 +92,9 @@ class StoryTests: XCTestCase {
 //            // actual, expected
 ////            XCTAssertEqual(decoded.count, 1,
 ////                           """
-////There should be one thingie in the whatchamacallit.
-////Decoded count: \(decoded.count)
-////""")
+//// There should be one thingie in the whatchamacallit.
+//// Decoded count: \(decoded.count)
+//// """)
 //
 //        } catch {
 //            print("error \(error)")

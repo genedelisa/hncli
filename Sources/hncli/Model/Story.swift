@@ -38,15 +38,15 @@ public struct Story: Codable {
     public let url: String?
 
     enum CodingKeys: String, CodingKey {
-        case by = "by"
-        case descendants = "descendants"
-        case id = "id"
-        case kids = "kids"
-        case score = "score"
-        case time = "time"
-        case title = "title"
-        case type = "type"
-        case url = "url"
+        case by
+        case descendants
+        case id
+        case kids
+        case score
+        case time
+        case title
+        case type
+        case url
     }
 
     public init(by: String?, descendants: Int?, id: Int?, kids: [Int]?, score: Int?, time: Int?, title: String?, type: String?, url: String?) {
@@ -159,5 +159,3 @@ extension Story: CustomStringConvertible {
         return s
     }
 }
-
-

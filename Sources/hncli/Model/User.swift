@@ -42,12 +42,12 @@ public struct User: Codable {
     public let submitted: [Int]?
 
     enum CodingKeys: String, CodingKey {
-        case about = "about"
-        case created = "created"
-        case delay = "delay"
-        case id = "id"
-        case karma = "karma"
-        case submitted = "submitted"
+        case about
+        case created
+        case delay
+        case id
+        case karma
+        case submitted
     }
 
     public init(about: String?, created: Int?, delay: Int?, id: String?, karma: Int?, submitted: [Int]?) {

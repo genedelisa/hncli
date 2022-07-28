@@ -5,7 +5,7 @@
 //
 // Using Swift 5.0
 // Running macOS 12.4
-// Github: https://github.com/genedelisa/createMIDI
+// Github: https://github.com/genedelisa/hncli
 // Product: https://rockhoppertech.com/
 //
 // Follow me on Twitter: @GeneDeLisaDev
@@ -57,9 +57,18 @@ struct MainCommand: AsyncParsableCommand {
         
         @Flag(
             help: ArgumentHelp(NSLocalizedString("Display the JSON response.", comment: ""),
-                               discussion: "This will print the the JSON returned from the server")
+                               discussion: "This will print the JSON returned from the server")
         )
         var displayJSON = false
+        
+        @Flag(
+            help: ArgumentHelp(NSLocalizedString("Display the items briefly .", comment: ""),
+                               discussion: "This will print just the title and url of the item")
+        )
+        var displayBrief = false
+        
+        @Option(name: .shortAndLong, help: "Number of items to fetch")
+        var fetchLimit: Int = 500
 
     }
 
@@ -94,7 +103,3 @@ struct MainCommand: AsyncParsableCommand {
 //    }
 
 }
-
-
-
-

@@ -1,3 +1,3 @@
 #!/usr/bin/env zsh
 
-sudo /usr/bin/log config --status --subsystem com.rockhoppertech.createMIDI
+sudo /usr/bin/log config --status --subsystem com.rockhoppertech.hncli

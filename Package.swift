@@ -48,7 +48,7 @@ let package = Package(
             linkerSettings: [
               .unsafeFlags([
                 "-Xlinker", "-sectcreate", "-Xlinker", "__TEXT", "-Xlinker", "__info_plist", "-Xlinker",
-                "./SupportingFiles/createMIDI/Info.plist"
+                "./SupportingFiles/hncli/Info.plist"
               ]),
             ]),
 

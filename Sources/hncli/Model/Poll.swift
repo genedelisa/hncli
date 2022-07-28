@@ -27,7 +27,6 @@ import Foundation
 //
 //   let poll = try Poll(json)
 
-import Foundation
 
 // MARK: - Poll
 public struct Poll: Codable {
@@ -43,16 +42,16 @@ public struct Poll: Codable {
     public let type: String?
 
     enum CodingKeys: String, CodingKey {
-        case by = "by"
-        case descendants = "descendants"
-        case id = "id"
-        case kids = "kids"
-        case parts = "parts"
-        case score = "score"
-        case text = "text"
-        case time = "time"
-        case title = "title"
-        case type = "type"
+        case by
+        case descendants
+        case id
+        case kids
+        case parts
+        case score
+        case text
+        case time
+        case title
+        case type
     }
 
     public init(by: String?, descendants: Int?, id: Int?, kids: [Int]?, parts: [Int]?, score: Int?, text: String?, time: Int?, title: String?, type: String?) {

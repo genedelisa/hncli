@@ -41,15 +41,15 @@ public struct Ask: Codable {
     public let type: String?
 
     enum CodingKeys: String, CodingKey {
-        case by = "by"
-        case descendants = "descendants"
-        case id = "id"
-        case kids = "kids"
-        case score = "score"
-        case text = "text"
-        case time = "time"
-        case title = "title"
-        case type = "type"
+        case by
+        case descendants
+        case id
+        case kids
+        case score
+        case text
+        case time
+        case title
+        case type
     }
 
     public init(by: String?, descendants: Int?, id: Int?, kids: [Int]?, score: Int?, text: String?, time: Int?, title: String?, type: String?) {
@@ -115,4 +115,3 @@ public extension Ask {
         return String(data: try self.jsonData(), encoding: encoding)
     }
 }
-

@@ -151,11 +151,11 @@ main() {
 	exit 1
     }
 
-    print -- "sudo /usr/bin/log config --mode ${level} --subsystem com.rockhoppertech.createMIDI"
-    sudo /usr/bin/log config --mode ${level} --subsystem com.rockhoppertech.createMIDI
+    print -- "sudo /usr/bin/log config --mode ${level} --subsystem com.rockhoppertech.hncli"
+    sudo /usr/bin/log config --mode ${level} --subsystem com.rockhoppertech.hncli
 
     # check
-    sudo log config --status --subsystem com.rockhoppertech.createMIDI
+    sudo log config --status --subsystem com.rockhoppertech.hncli
     return ${status}
 }
 

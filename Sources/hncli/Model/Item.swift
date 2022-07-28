@@ -23,21 +23,21 @@
 
 import Foundation
 
-//id    The item's unique id.
-//deleted    true if the item is deleted.
-//type    The type of item. One of "job", "story", "comment", "poll", or "pollopt".
-//by    The username of the item's author.
-//time    Creation date of the item, in Unix Time.
-//text    The comment, story or poll text. HTML.
-//dead    true if the item is dead.
-//parent    The comment's parent: either another comment or the relevant story.
-//poll    The pollopt's associated poll.
-//kids    The ids of the item's comments, in ranked display order.
-//url    The URL of the story.
-//score    The story's score, or the votes for a pollopt.
-//title    The title of the story, poll or job. HTML.
-//parts    A list of related pollopts, in display order.
-//descendants    In the case of stories or polls, the total comment count.
+// id    The item's unique id.
+// deleted    true if the item is deleted.
+// type    The type of item. One of "job", "story", "comment", "poll", or "pollopt".
+// by    The username of the item's author.
+// time    Creation date of the item, in Unix Time.
+// text    The comment, story or poll text. HTML.
+// dead    true if the item is dead.
+// parent    The comment's parent: either another comment or the relevant story.
+// poll    The pollopt's associated poll.
+// kids    The ids of the item's comments, in ranked display order.
+// url    The URL of the story.
+// score    The story's score, or the votes for a pollopt.
+// title    The title of the story, poll or job. HTML.
+// parts    A list of related pollopts, in display order.
+// descendants    In the case of stories or polls, the total comment count.
 
 // MARK: - Item
 public struct Item: Codable {
@@ -61,22 +61,21 @@ public struct Item: Codable {
 
 
     enum CodingKeys: String, CodingKey {
-        case by = "by"
-        case descendants = "descendants"
-        case id = "id"
-        case kids = "kids"
-        case score = "score"
-        case time = "time"
-        case title = "title"
-        case type = "type"
-        case url = "url"
-        
-        case deleted = "deleted"
-        case text = "text"
-        case dead = "dead"
-        case parent = "parent"
-        case poll = "poll"
-        case parts = "parts"
+        case by
+        case descendants
+        case id
+        case kids
+        case score
+        case time
+        case title
+        case type
+        case url
+        case deleted
+        case text
+        case dead
+        case parent
+        case poll
+        case parts
     }
 
     public init(by: String?, descendants: Int?, id: Int?, kids: [Int]?,
@@ -87,7 +86,7 @@ public struct Item: Codable {
                 dead: Bool?,
                 parent: Int?,
                 poll: String?,
-                parts:[Int]?
+                parts: [Int]?
     ) {
         self.by = by
         self.descendants = descendants
@@ -140,7 +139,7 @@ public extension Item {
         dead: Bool?? = nil,
         parent: Int?? = nil,
         poll: String?? = nil,
-        parts:[Int]?? = nil
+        parts: [Int]?? = nil
 
     ) -> Item {
         return Item(

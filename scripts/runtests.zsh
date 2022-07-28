@@ -5,7 +5,7 @@
 # Time-stamp: "Last Modified 2022-04-25 06:46:04 by Gene De Lisa, genedelisa"
 #
 #
-# File: run tests for createMIDI
+# File: run tests for hncli
 #
 # Gene De Lisa
 # gene@rockhoppertech.com

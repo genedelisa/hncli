@@ -40,13 +40,13 @@ public struct Comment: Codable {
     public let type: String?
 
     enum CodingKeys: String, CodingKey {
-        case by = "by"
-        case id = "id"
-        case kids = "kids"
-        case parent = "parent"
-        case text = "text"
-        case time = "time"
-        case type = "type"
+        case by
+        case id
+        case kids
+        case parent
+        case text
+        case time
+        case type
     }
 
     public init(by: String?, id: Int?, kids: [Int]?, parent: Int?, text: String?, time: Int?, type: String?) {
@@ -106,4 +106,3 @@ public extension Comment {
         return String(data: try self.jsonData(), encoding: encoding)
     }
 }
-

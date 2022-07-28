@@ -27,7 +27,6 @@ import Foundation
 //
 //   let job = try Job(json)
 
-import Foundation
 
 // MARK: - Job
 public struct Job: Codable {
@@ -41,14 +40,14 @@ public struct Job: Codable {
     public let url: String?
 
     enum CodingKeys: String, CodingKey {
-        case by = "by"
-        case id = "id"
-        case score = "score"
-        case text = "text"
-        case time = "time"
-        case title = "title"
-        case type = "type"
-        case url = "url"
+        case by
+        case id
+        case score
+        case text
+        case time
+        case title
+        case type
+        case url
     }
 
     public init(by: String?, id: Int?, score: Int?, text: String?, time: Int?, title: String?, type: String?, url: String?) {
