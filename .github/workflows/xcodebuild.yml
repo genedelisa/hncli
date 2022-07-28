@@ -14,6 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build macOS
-        run: xcodebuild -scheme createMIDI  -destination 'platform=macOS'
+        run: xcodebuild -scheme hncli  -destination 'platform=macOS'
       - name: Run macOS tests
-        run: xcodebuild -scheme createMIDI -destination 'platform=macOS' test
+        run: xcodebuild -scheme hncli -destination 'platform=macOS' test

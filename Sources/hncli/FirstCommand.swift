@@ -20,19 +20,14 @@
 //
 // https://opensource.org/licenses/MIT
 
-
-
-import Foundation
 import ArgumentParser
-import os.log
+import Foundation
 import GDTerminalColor
-
+import os.log
 
 extension MainCommand {
-
     @available(macOS 10.15, *)
     struct FirstCommand: AsyncParsableCommand {
-
         static var configuration = CommandConfiguration(
             commandName: "First",
             abstract: "This frobs first"
@@ -46,11 +41,9 @@ extension MainCommand {
         @Option(name: .shortAndLong, help: "Path to the thing")
         var thing: String?
 
-
         func run() async throws {
             let s = "\(type(of: self))"
             Logger.general.debug("Yo from \(s)")
         }
-
     }
 }

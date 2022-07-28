@@ -18,8 +18,8 @@
 //
 // https://opensource.org/licenses/MIT
 
-import os.log
 import Foundation
+import os.log
 
 @available(iOS 14.0, *)
 @available(macOS 12.0, *)
@@ -28,15 +28,13 @@ public class HackerNewsAPIService {
 
     public var verbose = false
     public var displayJSON = false
-   // public var fetchLimit = 500
+    // public var fetchLimit = 500
 
-    
     // static let apiKey = ""
-    
+
     public init() {
-        self.logger.trace("\(#function)")
+        logger.trace("\(#function)")
     }
-    
 
 //    New, Top and Best Stories
 //
@@ -45,9 +43,7 @@ public class HackerNewsAPIService {
 //    Example: https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty
 //
 
-
     func fetchNewStoryIDs() async throws -> [Int] {
-        
         let urlRequest = try HackerNewsEndpooint.createNewStoriesGETURLRequest()
         return try await fetchIDs(urlRequest: urlRequest)
 
@@ -77,11 +73,9 @@ public class HackerNewsAPIService {
 //            self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
 //            throw HackerNewsAPIError.invalidResponse(reason: "Bad response: \(error.localizedDescription)")
 //        }
-
     }
-    
+
     func fetchTopStoryIDs() async throws -> [Int] {
-        
         let urlRequest = try HackerNewsEndpooint.createNewStoriesGETURLRequest()
         return try await fetchIDs(urlRequest: urlRequest)
 
@@ -114,17 +108,14 @@ public class HackerNewsAPIService {
 //            Logger.service.error("Error: \(error.localizedDescription, privacy: .public)")
 //            throw HackerNewsAPIError.invalidResponse(reason: "Bad response: \(error.localizedDescription)")
 //        }
-
     }
-    
+
     func fetchBestStoryIDs() async throws -> [Int] {
-        
         let urlRequest = try HackerNewsEndpooint.createBestStoriesGETURLRequest()
         return try await fetchIDs(urlRequest: urlRequest)
     }
-    
-    func fetchIDs(urlRequest: URLRequest) async throws -> [Int] {
 
+    func fetchIDs(urlRequest: URLRequest) async throws -> [Int] {
         do {
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
@@ -142,9 +133,9 @@ public class HackerNewsAPIService {
                 let ids = try decoder.decode([Int].self, from: data)
                 Logger.service.debug("Number of IDs: \(ids.count, privacy: .public)")
                 return ids
-                
+
             } catch {
-                self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
+                logger.error("Error: \(error.localizedDescription, privacy: .public)")
                 throw HackerNewsAPIError.decoding(reason: "Could not decode response: \(error.localizedDescription)")
             }
 
@@ -154,18 +145,15 @@ public class HackerNewsAPIService {
             Logger.service.error("Error: \(error.localizedDescription, privacy: .public)")
             throw HackerNewsAPIError.invalidResponse(reason: "Fetching IDs: \(error.localizedDescription)")
         }
-
     }
 
-
-    
 //    func fetchStory(id: Int) async throws -> Story {
 //        self.logger.trace("\(#function)")
-//        
+//
 //        let urlRequest = try HackerNewsEndpooint.createStoryGETURLRequest(id: id)
-//        
+//
 //        Logger.service.debug("\(urlRequest)")
-//        
+//
 //        do {
 //            let (data, response) = try await URLSession.shared.data(for: urlRequest)
 //
@@ -185,7 +173,7 @@ public class HackerNewsAPIService {
 //            do {
 //                let decoder = newJSONDecoder()
 //                return try decoder.decode(Story.self, from: data)
-//                
+//
 //            } catch let DecodingError.dataCorrupted(context) {
 //                print("Decoding Error. The data is corrupted.")
 //                print("\(context.debugDescription)")
@@ -197,7 +185,7 @@ public class HackerNewsAPIService {
 //                    print("\(underlying.localizedDescription)")
 //                    print("Underlying error: \n\(underlying)")
 //                }
-//                
+//
 //                throw HackerNewsAPIError.decoding(reason: "")
 //
 //
@@ -237,26 +225,26 @@ public class HackerNewsAPIService {
 //                    print("Underlying error: \n\(underlying)")
 //                }
 //                throw HackerNewsAPIError.decoding(reason: "")
-//                
+//
 //            } catch {
 //                self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
 //                throw HackerNewsAPIError.decoding(reason: "Could not decode response: \(error.localizedDescription)")
 //            }
-//            
+//
 //        } catch {
 //            self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
 //            throw HackerNewsAPIError.invalidResponse(reason: "bad response \(error.localizedDescription)")
 //        }
 //
 //    }
-    
+
     func fetchItem(id: Int) async throws -> Item {
-        self.logger.trace("\(#function)")
-        
+        logger.trace("\(#function)")
+
         let urlRequest = try HackerNewsEndpooint.itemGETURLRequest(id: id)
-        
+
         Logger.service.debug("\(urlRequest)")
-        
+
         do {
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
 
@@ -277,7 +265,7 @@ public class HackerNewsAPIService {
             do {
                 let decoder = newJSONDecoder()
                 return try decoder.decode(Item.self, from: data)
-                
+
             } catch let DecodingError.dataCorrupted(context) {
                 print("Decoding Error. The data is corrupted.")
                 print("\(context.debugDescription)")
@@ -289,7 +277,7 @@ public class HackerNewsAPIService {
                     print("\(underlying.localizedDescription)")
                     print("Underlying error: \n\(underlying)")
                 }
-                
+
                 throw HackerNewsAPIError.decoding(reason: "")
 
             } catch let DecodingError.keyNotFound(key, context) {
@@ -304,7 +292,7 @@ public class HackerNewsAPIService {
                     print("Underlying error: \n\(underlying)")
                 }
                 throw HackerNewsAPIError.decoding(reason: "Key not found")
-                
+
             } catch let DecodingError.valueNotFound(value, context) {
                 print("Decoding Error. The value '\(value)' is not found.")
                 print("Value '\(value)' not found:", context.debugDescription)
@@ -317,7 +305,7 @@ public class HackerNewsAPIService {
                     print("Underlying error: \n\(underlying)")
                 }
                 throw HackerNewsAPIError.decoding(reason: "Value not found")
-                
+
             } catch let DecodingError.typeMismatch(type, context) {
                 print("Decoding Error. The type '\(type)' mismatch.")
                 print("Type '\(type)' mismatch:", context.debugDescription)
@@ -330,47 +318,18 @@ public class HackerNewsAPIService {
                     print("Underlying error: \n\(underlying)")
                 }
                 throw HackerNewsAPIError.decoding(reason: "Type mismatch")
-                
+
             } catch {
-                self.logger.error("Error: \(error.localizedDescription, privacy: .public)")
+                logger.error("Error: \(error.localizedDescription, privacy: .public)")
                 throw HackerNewsAPIError.decoding(reason: "Could not decode response: \(error.localizedDescription)")
             }
-            
+
         } catch {
             Logger.service.error("Error: \(error.localizedDescription, privacy: .public)")
             throw HackerNewsAPIError.invalidResponse(reason: "Fetching item: \(error.localizedDescription)")
         }
-
     }
-    
-//    private(set) var storyIDs: [Int] = []
-//    private(set) var stories: [Story] = []
 
-//    public func fetchTopStories() async throws -> [Story] {
-//
-//        stories.removeAll()
-//        storyIDs.removeAll()
-//
-//        do {
-//            print("getting top story IDs")
-//            self.storyIDs = try await fetchTopStoryIDs()
-//
-//            print("getting stories \(self.storyIDs.count)")
-//            for storyID in storyIDs {
-//                do {
-//                    let story = try await self.fetchStory(id: storyID)
-//                    self.stories.append(story)
-//                } catch {
-//                    print(error)
-//                }
-//            }
-//        } catch {
-//            print(error)
-//        }
-//
-//        return stories
-//    }
-    
     public func fetchBestStories(_ fetchLimit: Int = 500) async throws -> [Item] {
         var items: [Item] = []
 
@@ -379,15 +338,16 @@ public class HackerNewsAPIService {
                 print("Fetching best story IDs")
             }
             let itemIDs = try await fetchBestStoryIDs()
-            items = try await self.fetchItems(itemIDs: itemIDs, fetchLimit: fetchLimit)
-            
+            items = try await fetchItems(itemIDs: itemIDs, fetchLimit: fetchLimit)
+
         } catch {
             Logger.service.error("\(#function) \(error)")
             throw HackerNewsAPIError.invalidResponse(reason: "\(error.localizedDescription)")
         }
-        
+
         return items
     }
+
     public func fetchTopStories(_ fetchLimit: Int = 500) async throws -> [Item] {
         var items: [Item] = []
 
@@ -396,20 +356,19 @@ public class HackerNewsAPIService {
                 print("Fetching top story IDs")
             }
             let itemIDs = try await fetchTopStoryIDs()
-            items = try await self.fetchItems(itemIDs: itemIDs, fetchLimit: fetchLimit)
-            
+            items = try await fetchItems(itemIDs: itemIDs, fetchLimit: fetchLimit)
+
         } catch {
             Logger.service.error("\(#function) \(error)")
             throw HackerNewsAPIError.invalidResponse(reason: "\(error.localizedDescription)")
         }
-        
+
         return items
     }
-    
+
     public func fetchItems(itemIDs: [Int], fetchLimit: Int) async throws -> [Item] {
-        
         var items: [Item] = []
-        
+
         if verbose {
             print("Fetching \(fetchLimit) of \(itemIDs.count) items")
         }
@@ -417,14 +376,14 @@ public class HackerNewsAPIService {
         var index = 0
         for itemID in itemIDs {
             do {
-                let item = try await self.fetchItem(id: itemID)
+                let item = try await fetchItem(id: itemID)
                 items.append(item)
 
                 index += 1
                 if index == fetchLimit {
                     break
                 }
-                
+
                 if verbose {
                     if let s = item.title {
                         print("\(s)\n")
@@ -436,7 +395,6 @@ public class HackerNewsAPIService {
         }
         return items
     }
-    
 
 //    func makePOSTUserRequest(post: Post) async throws -> Story {
 //        self.logger.trace("\(#function)")
@@ -490,5 +448,4 @@ public class HackerNewsAPIService {
 //        }
 //
 //    }
-
 }

@@ -26,6 +26,7 @@
 import Foundation
 
 // MARK: - Story
+
 public struct Story: Codable {
     public let by: String?
     public let descendants: Int?
@@ -91,7 +92,7 @@ public extension Story {
         type: String?? = nil,
         url: String?? = nil
     ) -> Story {
-        return Story(
+        Story(
             by: by ?? self.by,
             descendants: descendants ?? self.descendants,
             id: id ?? self.id,
@@ -105,22 +106,20 @@ public extension Story {
     }
 
     func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
+        try newJSONEncoder().encode(self)
     }
 
     func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
+        String(data: try jsonData(), encoding: encoding)
     }
 }
-
 
 // MARK: - CustomStringConvertible
 
 extension Story: CustomStringConvertible {
-    
     public var description: String {
         var s = "\(Swift.type(of: self))\n"
-        
+
         if let v = title {
             s += "title \(v)\n"
         }
@@ -141,7 +140,7 @@ extension Story: CustomStringConvertible {
         }
         if let v = time {
             s += "time \(v)\n"
-            
+
             let t = Date(timeIntervalSince1970: Double(v))
             let dateFormat: DateFormatter = {
                 let dateFormat = DateFormatter()
@@ -155,7 +154,7 @@ extension Story: CustomStringConvertible {
         if let v = url {
             s += "url \(v)\n"
         }
-        
+
         return s
     }
 }

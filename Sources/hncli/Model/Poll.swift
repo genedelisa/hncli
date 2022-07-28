@@ -1,7 +1,7 @@
 // File:    File.swift
-// Project: 
-// Package: 
-// Product: 
+// Project:
+// Package:
+// Product:
 //
 // Created by Gene De Lisa on 7/26/22
 //
@@ -20,15 +20,14 @@
 //
 // https://opensource.org/licenses/MIT
 
-
 import Foundation
 // This file was generated from JSON Schema using quicktype, do not modify it directly.
 // To parse the JSON, add this file to your project and do:
 //
 //   let poll = try Poll(json)
 
-
 // MARK: - Poll
+
 public struct Poll: Codable {
     public let by: String?
     public let descendants: Int?
@@ -98,7 +97,7 @@ public extension Poll {
         title: String?? = nil,
         type: String?? = nil
     ) -> Poll {
-        return Poll(
+        Poll(
             by: by ?? self.by,
             descendants: descendants ?? self.descendants,
             id: id ?? self.id,
@@ -113,10 +112,10 @@ public extension Poll {
     }
 
     func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
+        try newJSONEncoder().encode(self)
     }
 
     func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
+        String(data: try jsonData(), encoding: encoding)
     }
 }

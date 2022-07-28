@@ -18,7 +18,6 @@
 //
 // https://opensource.org/licenses/MIT
 
-
 import Foundation
 
 // MARK: - Helper functions for creating encoders and decoders

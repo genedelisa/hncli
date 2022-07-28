@@ -1,7 +1,7 @@
 // File:    File.swift
-// Project: 
-// Package: 
-// Product: 
+// Project:
+// Package:
+// Product:
 //
 // Created by Gene De Lisa on 7/27/22
 //
@@ -19,7 +19,6 @@
 // You may obtain a copy of the License at
 //
 // https://opensource.org/licenses/MIT
-
 
 import Foundation
 
@@ -40,6 +39,7 @@ import Foundation
 // descendants    In the case of stories or polls, the total comment count.
 
 // MARK: - Item
+
 public struct Item: Codable {
     public let by: String?
     public let descendants: Int?
@@ -50,15 +50,13 @@ public struct Item: Codable {
     public let title: String?
     public let type: String?
     public let url: String?
-    
+
     public let deleted: Bool?
     public let text: String?
     public let dead: Bool?
     public let parent: Int?
     public let poll: String?
     public let parts: [Int]?
-
-
 
     enum CodingKeys: String, CodingKey {
         case by
@@ -86,8 +84,8 @@ public struct Item: Codable {
                 dead: Bool?,
                 parent: Int?,
                 poll: String?,
-                parts: [Int]?
-    ) {
+                parts: [Int]?)
+    {
         self.by = by
         self.descendants = descendants
         self.id = id
@@ -142,7 +140,7 @@ public extension Item {
         parts: [Int]?? = nil
 
     ) -> Item {
-        return Item(
+        Item(
             by: by ?? self.by,
             descendants: descendants ?? self.descendants,
             id: id ?? self.id,
@@ -152,34 +150,31 @@ public extension Item {
             title: title ?? self.title,
             type: type ?? self.type,
             url: url ?? self.url,
-            
+
             deleted: deleted ?? self.deleted,
             text: text ?? self.text,
             dead: dead ?? self.dead,
             parent: parent ?? self.parent,
             poll: poll ?? self.poll,
             parts: parts ?? self.parts
-            
         )
     }
 
     func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
+        try newJSONEncoder().encode(self)
     }
 
     func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
+        String(data: try jsonData(), encoding: encoding)
     }
 }
-
 
 // MARK: - CustomStringConvertible
 
 extension Item: CustomStringConvertible {
-    
     public var description: String {
         var s = "\(Swift.type(of: self))\n"
-        
+
         if let v = title {
             s += "title \(v)\n"
         }
@@ -200,7 +195,7 @@ extension Item: CustomStringConvertible {
         }
         if let v = time {
             s += "time \(v)\n"
-            
+
             let t = Date(timeIntervalSince1970: Double(v))
             let dateFormat: DateFormatter = {
                 let dateFormat = DateFormatter()
@@ -214,7 +209,7 @@ extension Item: CustomStringConvertible {
         if let v = url {
             s += "url \(v)\n"
         }
-        
+
         if let v = deleted {
             s += "deleted \(v)\n"
         }

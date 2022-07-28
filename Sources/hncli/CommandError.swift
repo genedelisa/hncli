@@ -18,12 +18,10 @@
 //
 // https://opensource.org/licenses/MIT
 
-
-
-import Foundation
 import ArgumentParser
-import os.log
+import Foundation
 import GDTerminalColor
+import os.log
 
 enum CommandError: Error {
     case helpFileNotFound
@@ -31,6 +29,6 @@ enum CommandError: Error {
 
 extension CommandError: Equatable {
     public static func == (lhs: CommandError, rhs: CommandError) -> Bool {
-        return lhs.localizedDescription == rhs.localizedDescription
+        lhs.localizedDescription == rhs.localizedDescription
     }
 }

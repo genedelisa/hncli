@@ -18,12 +18,10 @@
 //
 // https://opensource.org/licenses/MIT
 
-
-
-import Foundation
 import ArgumentParser
-import os.log
+import Foundation
 import GDTerminalColor
+import os.log
 
 // @main enum TheApp {
 //  static func main() async throws {

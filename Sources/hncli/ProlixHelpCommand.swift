@@ -18,19 +18,14 @@
 //
 // https://opensource.org/licenses/MIT
 
-
-
-import Foundation
 import ArgumentParser
-import os.log
+import Foundation
 import GDTerminalColor
-
+import os.log
 
 extension MainCommand {
-
     @available(macOS 10.15, *)
     struct ProlixHelpCommand: AsyncParsableCommand {
-
         static var configuration = CommandConfiguration(
             commandName: "prolixHelp",
             abstract: "This displays the help file"
@@ -47,18 +42,16 @@ extension MainCommand {
         var defaultHelpFG = XTColorName.gold1.rawValue
 
         var defaultHelpBG = XTColorName.darkBlue.rawValue
-        
+
         @Option(name: .shortAndLong, help: "default foreground color")
         var defaultForeground: String?
 
-
         func showHelp() throws {
-            
 //            print("fg \(fg)")
 //            print("bg \(bg)")
 //            print("defaultForeground \(defaultForeground)")
-//            
-//            
+//
+//
 //            if let dfg = defaultForeground {
 //                ColorConsole.setDefaultForegound(dfg)
 //                print("setting default fg \(dfg)")
@@ -68,9 +61,10 @@ extension MainCommand {
 //            } else {
 //                print("dfg is not set")
 //            }
-            
+
             if let helpURL = Bundle.module.url(forResource: "help",
-                                               withExtension: "txt") {
+                                               withExtension: "txt")
+            {
                 do {
                     let data = try Data(contentsOf: helpURL)
                     if let s = String(data: data, encoding: .utf8) {
@@ -93,20 +87,18 @@ extension MainCommand {
                            att: [.bold])
         }
 
-
         func run() async throws {
             let s = "\(type(of: self))"
             Logger.general.debug("Yo from \(s)")
 
-// not called
+            // not called
 //            defer {
 //                Color256.printReset()
 //                print("reset")
 //            }
 
-            if options.verbose {
-            }
-            
+            if options.verbose {}
+
             ColorConsole.enablePrintColors(fg: fg, bg: bg)
 
 //            var fgCode = Color256.foregroundCode(color: defaultHelpFG)
@@ -133,7 +125,6 @@ extension MainCommand {
 //            }
 //            print("\(bgCode)")
 
-
             do {
                 try showHelp()
             } catch {
@@ -144,6 +135,5 @@ extension MainCommand {
             Color256.printReset()
             Self.exit()
         }
-
     }
 }

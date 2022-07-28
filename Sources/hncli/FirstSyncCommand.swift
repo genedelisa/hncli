@@ -20,17 +20,13 @@
 //
 // https://opensource.org/licenses/MIT
 
-
-
-import Foundation
 import ArgumentParser
-import os.log
+import Foundation
 import GDTerminalColor
+import os.log
 
 extension MainCommand {
-
     struct FirstSyncCommand: ParsableCommand {
-
         static var configuration = CommandConfiguration(
             commandName: "FirstSync",
             abstract: "This frobs sync"

@@ -1,7 +1,7 @@
 // File:    File.swift
-// Project: 
-// Package: 
-// Product: 
+// Project:
+// Package:
+// Product:
 //
 // Created by Gene De Lisa on 7/26/22
 //
@@ -20,8 +20,6 @@
 //
 // https://opensource.org/licenses/MIT
 
-
-
 // This file was generated from JSON Schema using quicktype, do not modify it directly.
 // To parse the JSON, add this file to your project and do:
 //
@@ -30,6 +28,7 @@
 import Foundation
 
 // MARK: - Comment
+
 public struct Comment: Codable {
     public let by: String?
     public let id: Int?
@@ -87,7 +86,7 @@ public extension Comment {
         time: Int?? = nil,
         type: String?? = nil
     ) -> Comment {
-        return Comment(
+        Comment(
             by: by ?? self.by,
             id: id ?? self.id,
             kids: kids ?? self.kids,
@@ -99,10 +98,10 @@ public extension Comment {
     }
 
     func jsonData() throws -> Data {
-        return try newJSONEncoder().encode(self)
+        try newJSONEncoder().encode(self)
     }
 
     func jsonString(encoding: String.Encoding = .utf8) throws -> String? {
-        return String(data: try self.jsonData(), encoding: encoding)
+        String(data: try jsonData(), encoding: encoding)
     }
 }

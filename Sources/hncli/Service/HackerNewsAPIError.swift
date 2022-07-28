@@ -18,19 +18,16 @@
 //
 // https://opensource.org/licenses/MIT
 
-
 import Foundation
 import os.log
 
 public enum HackerNewsAPIError: Error {
-    
     case apiError(reason: String)
     case post(reason: String)
     case badPacket(reason: String)
     case encoding(reason: String)
     case decoding(reason: String)
 
-    
     case httpStatusCode(reason: String, status: Int)
     case invalidResponse(reason: String)
     case invalidURL(reason: String)
@@ -41,77 +38,73 @@ public enum HackerNewsAPIError: Error {
 extension HackerNewsAPIError: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .post(reason: let reason):
+        case let .post(reason: reason):
             return "\(reason)"
-        case .badPacket(reason: let reason):
+        case let .badPacket(reason: reason):
             return "\(reason)"
-        case .apiError(reason: let reason):
+        case let .apiError(reason: reason):
             return "\(reason)"
-        case .invalidResponse(reason: let reason):
+        case let .invalidResponse(reason: reason):
             return "\(reason)"
-        case .invalidURL(reason: let reason):
+        case let .invalidURL(reason: reason):
             return "\(reason)"
-        case .rateLimitted(reason: let reason):
+        case let .rateLimitted(reason: reason):
             return "\(reason)"
-        case .serverBusy(reason: let reason):
+        case let .serverBusy(reason: reason):
             return "\(reason)"
-        case .decoding(reason: let reason):
+        case let .decoding(reason: reason):
             return "\(reason)"
-        case .encoding(reason: let reason):
+        case let .encoding(reason: reason):
             return "\(reason)"
 
-        case .httpStatusCode(reason: let reason, status: let status):
+        case let .httpStatusCode(reason: reason, status: status):
             return "\(reason) status: \(status)"
         }
     }
 }
 
 extension HackerNewsAPIError: LocalizedError {
-    
     public var errorDescription: String? {
         switch self {
         case let .badPacket(localizedError):
             return NSLocalizedString(localizedError,
                                      comment: "My error")
-            
-        case .httpStatusCode(reason: let reason, status: let status):
+
+        case let .httpStatusCode(reason: reason, status: status):
             return NSLocalizedString(reason,
                                      comment: "My error \(status)")
-            
-        case .post(reason: let reason):
+
+        case let .post(reason: reason):
             return NSLocalizedString(reason,
                                      comment: "My error \(reason)")
-        case .apiError(reason: let reason):
-            return NSLocalizedString(reason,
-                                     comment: "My error \(reason)")
-            
-        case .invalidResponse(reason: let reason):
+        case let .apiError(reason: reason):
             return NSLocalizedString(reason,
                                      comment: "My error \(reason)")
 
-        case .invalidURL(reason: let reason):
+        case let .invalidResponse(reason: reason):
             return NSLocalizedString(reason,
                                      comment: "My error \(reason)")
 
-            
-        case .rateLimitted(reason: let reason):
-            return NSLocalizedString(reason,
-                                     comment: "My error \(reason)")
-            
-        case .serverBusy(reason: let reason):
-            return NSLocalizedString(reason,
-                                     comment: "My error \(reason)")
-        case .decoding(reason: let reason):
-            return NSLocalizedString(reason,
-                                     comment: "My error \(reason)")
-        case .encoding(reason: let reason):
+        case let .invalidURL(reason: reason):
             return NSLocalizedString(reason,
                                      comment: "My error \(reason)")
 
-            
+        case let .rateLimitted(reason: reason):
+            return NSLocalizedString(reason,
+                                     comment: "My error \(reason)")
+
+        case let .serverBusy(reason: reason):
+            return NSLocalizedString(reason,
+                                     comment: "My error \(reason)")
+        case let .decoding(reason: reason):
+            return NSLocalizedString(reason,
+                                     comment: "My error \(reason)")
+        case let .encoding(reason: reason):
+            return NSLocalizedString(reason,
+                                     comment: "My error \(reason)")
         }
     }
-    
+
     public var failureReason: String? {
         switch self {
         default:
@@ -119,7 +112,7 @@ extension HackerNewsAPIError: LocalizedError {
                                      comment: "No comment at this time")
         }
     }
-    
+
     //    public var recoverySuggestion: String? {
     //        switch self {
     //        case .badPacket:
@@ -132,5 +125,4 @@ extension HackerNewsAPIError: LocalizedError {
     //            return NSLocalizedString("someHelpAnchor.", comment: "")
     //        }
     //    }
-    
 }

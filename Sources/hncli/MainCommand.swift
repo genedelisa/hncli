@@ -18,37 +18,31 @@
 //
 // https://opensource.org/licenses/MIT
 
-
-
-import Foundation
 import ArgumentParser
-import os.log
+import Foundation
 import GDTerminalColor
-
+import os.log
 
 @available(macOS 10.15, *)
 @main
 struct MainCommand: AsyncParsableCommand {
-
+    
     static var configuration = CommandConfiguration(
         commandName: "hncli ",
         abstract: "Hacker news frobs",
         usage: "hncli -flags SubCommand -flags",
         version: "0.0.1",
         subcommands: [TopStoriesCommand.self,
-                      ProlixHelpCommand.self
-                     ],
+                      ProlixHelpCommand.self],
         defaultSubcommand: ProlixHelpCommand.self
     )
-
+    
     // Common Options used by other commands
     struct Options: ParsableArguments {
-
         @Flag(name: .shortAndLong,
-              help: ArgumentHelp(NSLocalizedString("Yakity yak.", comment: ""))
-        )
+              help: ArgumentHelp(NSLocalizedString("Yakity yak.", comment: "")))
         var verbose = false
-
+        
         @Flag(
             help: ArgumentHelp(NSLocalizedString("Display the help document.", comment: ""),
                                discussion: "This will print the help file to stdout")
@@ -67,39 +61,44 @@ struct MainCommand: AsyncParsableCommand {
         )
         var displayBrief = false
         
-        @Option(name: .shortAndLong, help: "Number of items to fetch")
+        @Option(name: .shortAndLong,
+                help: ArgumentHelp(NSLocalizedString("Number of items to fetch.", comment: ""),
+                                   discussion: "This will fetch only this number of items regardless of the number of IDs")
+        )
         var fetchLimit: Int = 500
-
     }
-
-    @Flag(help: "Display the log entries for debugging.")
+    
+    //    @Flag(help: "Display the log entries for debugging.")
+    @Flag(help: ArgumentHelp(NSLocalizedString("Display the log entries for debugging.", comment: ""),
+                             discussion: "Display the log entries for debugging.")
+    )
     var showLogging = false
     
-    @Option(name: .shortAndLong, help: "default foreground color")
+    @Option(name: .shortAndLong,
+            help: ArgumentHelp(NSLocalizedString("default foreground color", comment: ""),
+                               discussion: ".")
+    )
     var defaultForeground: String?
     
-//    var defaultForeground: String? {
-//        didSet {
-//            if let am = try? XTermColorDict.colorValue(name: defaultForeground!) {
-//               // Color256.DEFAULT_FG = am.rawValue
-//                //XTColorName
-//            }
-//        }
-//    }
+    //    var defaultForeground: String? {
+    //        didSet {
+    //            if let am = try? XTermColorDict.colorValue(name: defaultForeground!) {
+    //               // Color256.DEFAULT_FG = am.rawValue
+    //                //XTColorName
+    //            }
+    //        }
+    //    }
     
-    
-
-//    func run() async throws {
-//
-//        guard #available(macOS 12, *) else {
-//            print("'hncli' isn't supported on this platform.")
-//            Self.errorMessage("'hncli' isn't supported on this platform.")
-//            return
-//        }
-//
-//        Logger.general.debug("Running")
-//        Self.consoleMessage("Howyadoon?")
-//
-//    }
-
+    //    func run() async throws {
+    //
+    //        guard #available(macOS 12, *) else {
+    //            print("'hncli' isn't supported on this platform.")
+    //            Self.errorMessage("'hncli' isn't supported on this platform.")
+    //            return
+    //        }
+    //
+    //        Logger.general.debug("Running")
+    //        Self.consoleMessage("Howyadoon?")
+    //
+    //    }
 }
