@@ -173,7 +173,7 @@ extension DefaultStringInterpolation {
             .withFullDate,
             .withFullTime,
             .withDashSeparatorInDate,
-            .withFractionalSeconds,
+            .withFractionalSeconds
         ]
 
         let isoDate = isoDateFormatter.string(from: entry.date)

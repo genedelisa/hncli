@@ -25,7 +25,7 @@ import Foundation
 import GDTerminalColor
 import os.log
 
-extension MainCommand {
+extension MainCommandWithSubcommands {
     @available(macOS 10.15, *)
     struct FirstCommand: AsyncParsableCommand {
         static var configuration = CommandConfiguration(

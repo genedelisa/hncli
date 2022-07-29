@@ -28,6 +28,9 @@ struct ColorConsole {
     init() {
         // Color256.DEFAULT_FG = XTColorName.gold1
         Color256.DEFAULT_BG = XTColorName.deepPink4
+
+//        if let fg = ProcessInfo.processInfo.environment["DEFAULT_FG"]  {
+//        }
     }
 
     static var defaultForeground = "gold1"

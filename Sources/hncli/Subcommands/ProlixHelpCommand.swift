@@ -23,7 +23,7 @@ import Foundation
 import GDTerminalColor
 import os.log
 
-extension MainCommand {
+extension MainCommandWithSubcommands {
     @available(macOS 10.15, *)
     struct ProlixHelpCommand: AsyncParsableCommand {
         static var configuration = CommandConfiguration(
@@ -63,8 +63,7 @@ extension MainCommand {
 //            }
 
             if let helpURL = Bundle.module.url(forResource: "help",
-                                               withExtension: "txt")
-            {
+                                               withExtension: "txt") {
                 do {
                     let data = try Data(contentsOf: helpURL)
                     if let s = String(data: data, encoding: .utf8) {

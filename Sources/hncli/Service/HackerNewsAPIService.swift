@@ -330,6 +330,24 @@ public class HackerNewsAPIService {
         }
     }
 
+    public func fetchNewStories(_ fetchLimit: Int = 500) async throws -> [Item] {
+        var items: [Item] = []
+
+        do {
+            if verbose {
+                print("Fetching new story IDs")
+            }
+            let itemIDs = try await fetchNewStoryIDs()
+            items = try await fetchItems(itemIDs: itemIDs, fetchLimit: fetchLimit)
+
+        } catch {
+            Logger.service.error("\(#function) \(error)")
+            throw HackerNewsAPIError.invalidResponse(reason: "\(error.localizedDescription)")
+        }
+
+        return items
+    }
+
     public func fetchBestStories(_ fetchLimit: Int = 500) async throws -> [Item] {
         var items: [Item] = []
 

@@ -84,8 +84,7 @@ public struct Item: Codable {
                 dead: Bool?,
                 parent: Int?,
                 poll: String?,
-                parts: [Int]?)
-    {
+                parts: [Int]?) {
         self.by = by
         self.descendants = descendants
         self.id = id

@@ -35,7 +35,6 @@ struct HackerNewsEndpooint {
         uc.host = "hacker-news.firebaseio.com"
         uc.path = "/v0/item/\(id).json"
 
-
         // eg "https://hacker-news.firebaseio.com/v0/item/32186203.json")
 
         guard let requestUrl = uc.url else {
@@ -157,14 +156,14 @@ struct HackerNewsEndpooint {
         urlRequest.httpMethod = "GET"
         urlRequest.allHTTPHeaderFields = [
             "Accept": "application/json",
-            "Content-Type": "application/json; charset=UTF-8",
+            "Content-Type": "application/json; charset=UTF-8"
         ]
 
         return urlRequest
     }
 }
 
-struct HackerNews {
+enum HackerNews {
     public static let endpoint = "https://hacker-news.firebaseio.com/v0"
 
     /// HackerNews REST API methods
@@ -172,10 +171,10 @@ struct HackerNews {
         /// HackerNews User REST API methods
         enum User {
             case id(String)
-            
+
             public var urlString: String {
                 switch self {
-                case .id(let userId):
+                case let .id(userId):
                     return "\(HackerNews.endpoint)/user/\(userId).json"
                 }
             }
@@ -189,19 +188,19 @@ struct HackerNews {
             case ask
             case job
             case show
-            
+
             public var urlString: String {
-                "\(HackerNews.endpoint)/\(self.rawValue)stories.json"
+                "\(HackerNews.endpoint)/\(rawValue)stories.json"
             }
         }
 
         /// HackerNews Item REST API methods
         enum Item {
             case id(Int)
-            
+
             public var urlString: String {
                 switch self {
-                case .id(let storyId):
+                case let .id(storyId):
                     return "\(HackerNews.endpoint)/item/\(storyId).json"
                 }
             }
