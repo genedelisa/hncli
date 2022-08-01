@@ -1,7 +1,5 @@
-// File:    File.swift
-// Project:
-// Package:
-// Product:
+// File:    Comment.swift
+// Project: hncli
 //
 // Created by Gene De Lisa on 7/26/22
 //
@@ -19,11 +17,6 @@
 // You may obtain a copy of the License at
 //
 // https://opensource.org/licenses/MIT
-
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
-//
-//   let comment = try Comment(json)
 
 import Foundation
 

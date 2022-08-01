@@ -17,15 +17,15 @@
 
 ## TODO
 
-- []
+- [] Colors are a mess
 - [] DocC everything
-- []
+- [] 
 
 ## Not working
 
--
+- Works
 
 ## Future Plans
 
-- [] Take a nap
+- [] Implement preferences
 - [x] Pet Meech

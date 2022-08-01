@@ -14,7 +14,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Issues][issues-shield]][issues-url]
 
-[![Platforms][platforms-ios-shield]][platforms-ios-url]
+[![Platforms][platforms-macos-shield]][platforms-macos-url]
 [![Swift 5][swift5-shield]][swift5-url]
 
 [![Xcode Build][xcodebuild-shield]][xcodebuild-url]
@@ -36,7 +36,7 @@
 
 ## Summary
 
-This is a Swift command line app.
+This is a Swift command line app that will fetch and display various types of "stories" from Hacker News.
 
 https://github.com/HackerNews/API
 
@@ -52,9 +52,17 @@ https://github.com/HackerNews/API
 
 ```shell
 xcrun swift run -- hncli
-
 xcrun swift run -- hncli  -h
 xcrun swift run -- hncli  --help
+
+xcrun swift run hncli --display-brief --fetch-limit 5 --ask
+xcrun swift run hncli --display-brief --fetch-limit 5 --new
+xcrun swift run hncli --display-brief --fetch-limit 5 --top
+xcrun swift run hncli --display-brief --fetch-limit 5 --best
+xcrun swift run hncli --display-brief --fetch-limit 5 --job
+xcrun swift run hncli --display-brief --fetch-limit 5 --show
+
+xcrun swift run hncli --display-brief --fetch-limit 5 --new --show-logging --verbose --display-json  
 
 
 ```

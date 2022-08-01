@@ -1,7 +1,5 @@
-// File:    File.swift
-// Project:
-// Package:
-// Product:
+// File:    Ask.swift
+// Project: hncli
 //
 // Created by Gene De Lisa on 7/26/22
 //
@@ -20,10 +18,6 @@
 //
 // https://opensource.org/licenses/MIT
 
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
-//
-//   let ask = try Ask(json)
 
 import Foundation
 

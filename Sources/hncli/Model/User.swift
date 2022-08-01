@@ -1,7 +1,5 @@
-// File:    File.swift
-// Project:
-// Package:
-// Product:
+// File:    User.swift
+// Project: hncli
 //
 // Created by Gene De Lisa on 7/26/22
 //
@@ -21,11 +19,6 @@
 // https://opensource.org/licenses/MIT
 
 // For example: https://hacker-news.firebaseio.com/v0/user/jl.json?print=pretty
-
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
-//
-//   let user = try User(json)
 
 import Foundation
 

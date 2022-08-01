@@ -1,7 +1,5 @@
-// File:    File.swift
-// Project:
-// Package:
-// Product:
+// File:    Poll.swift
+// Project: hncli
 //
 // Created by Gene De Lisa on 7/26/22
 //
@@ -21,10 +19,6 @@
 // https://opensource.org/licenses/MIT
 
 import Foundation
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
-//
-//   let poll = try Poll(json)
 
 // MARK: - Poll
 
