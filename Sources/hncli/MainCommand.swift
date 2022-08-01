@@ -40,6 +40,9 @@ struct MainCommand: AsyncParsableCommand {
         case best
         case new
         case top
+        case ask
+        case job
+        case show
     }
 
     @Flag(exclusivity: .exclusive,
@@ -118,11 +121,17 @@ struct MainCommand: AsyncParsableCommand {
 
             switch searchType {
             case .best:
-                stories = try await api.fetchBestStories(fetchLimit)
+                stories = try await api.fetchStories(kind: .beststories, fetchLimit: fetchLimit)
             case .new:
-                stories = try await api.fetchNewStories(fetchLimit)
+                stories = try await api.fetchStories(kind: .newstories, fetchLimit: fetchLimit)
             case .top:
-                stories = try await api.fetchTopStories(fetchLimit)
+                stories = try await api.fetchStories(kind: .topstories, fetchLimit: fetchLimit)
+            case .ask:
+                stories = try await api.fetchStories(kind: .askstories, fetchLimit: fetchLimit)
+            case .job:
+                stories = try await api.fetchStories(kind: .jobstories, fetchLimit: fetchLimit)
+            case .show:
+                stories = try await api.fetchStories(kind: .showstories, fetchLimit: fetchLimit)
             }
 
 //            Color256.DEFAULT_FG = .orangeRed1
@@ -158,7 +167,6 @@ struct MainCommand: AsyncParsableCommand {
                         Color256.print(s, fg: .green, bg: .darkBlue, att: [.italic])
                         // ColorConsole.consoleMessage(s)
                     }
-
                 } else {
                     if let s = story.type {
                         ColorConsole.consoleMessage("Item type: \(s)")
@@ -193,7 +201,6 @@ struct MainCommand: AsyncParsableCommand {
 
                 print()
             }
-
         } catch {
             Logger.command.error("\(#function) \(error.localizedDescription, privacy: .public)")
             ColorConsole.errorMessage(error.localizedDescription)

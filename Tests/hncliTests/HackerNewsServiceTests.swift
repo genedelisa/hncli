@@ -37,7 +37,8 @@ final class HackerNewsServiceTests: XCTestCase {
         let api = HackerNewsAPIService()
 
         do {
-            let IDs = try await api.fetchNewStoryIDs()
+//            let IDs = try await api.fetchNewStoryIDs()
+            let IDs = try await api.fetchIDs(kind: .newstories)
             XCTAssertNotNil(IDs, "is not nil")
 
             Logger.testing.debug("\(IDs)")
@@ -53,7 +54,8 @@ final class HackerNewsServiceTests: XCTestCase {
         let api = HackerNewsAPIService()
 
         do {
-            let IDs = try await api.fetchNewStoryIDs()
+            let IDs = try await api.fetchIDs(kind: .newstories)
+
             Logger.testing.info("\(IDs)")
             XCTAssertGreaterThan(IDs.count, 0, "that there are actual IDs returned")
 
@@ -71,7 +73,7 @@ final class HackerNewsServiceTests: XCTestCase {
         let api = HackerNewsAPIService()
 
         do {
-            let stories = try await api.fetchTopStories()
+            let stories = try await api.fetchStories(kind: .topstories)
 
             Logger.testing.info("story count: \(stories.count)")
             XCTAssertGreaterThan(stories.count, 0, "that there are actual IDs returned")

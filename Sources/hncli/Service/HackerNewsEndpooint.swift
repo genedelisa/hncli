@@ -42,32 +42,54 @@ struct HackerNewsEndpooint {
         }
         Logger.service.debug("story GET request url: \(requestUrl, privacy: .public)")
         return createGETURLRequest(requestUrl: requestUrl)
-
-        //        var urlRequest = URLRequest(url: requestUrl)
-        //        urlRequest.httpMethod = "GET"
-        //        urlRequest.allHTTPHeaderFields = [
-        //            "Accept": "application/json",
-        //            "Content-Type": "application/json; charset=UTF-8"
-        //        ]
-        //
-        //        return urlRequest
     }
 
+    static func createMaxItemGETURLRequest() throws -> URLRequest {
+        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/maxitem.json") else {
+            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
+        }
+        return createGETURLRequest(requestUrl: requestUrl)
+    }
+
+//    Ask, Show and Job Stories
+//
+//    Up to 200 of the latest Ask HN, Show HN, and Job stories are at /v0/askstories, /v0/showstories, and /v0/jobstories.
+//
+
+    static func createAskIDsGETURLRequest() throws -> URLRequest {
+        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/askstories.json") else {
+            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
+        }
+        return createGETURLRequest(requestUrl: requestUrl)
+    }
+
+    static func createShowIDsGETURLRequest() throws -> URLRequest {
+        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/showstories.json") else {
+            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
+        }
+        return createGETURLRequest(requestUrl: requestUrl)
+    }
+
+    static func createJobIDsGETURLRequest() throws -> URLRequest {
+        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/jobstories.json") else {
+            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
+        }
+        return createGETURLRequest(requestUrl: requestUrl)
+    }
+
+    static func createGETURLRequest(kind: StoryKind) throws -> URLRequest {
+        
+        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/\(kind.rawValue).json") else {
+            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
+        }
+        return createGETURLRequest(requestUrl: requestUrl)
+    }
+    
     static func createNewStoriesGETURLRequest() throws -> URLRequest {
         guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/newstories.json") else {
             throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
         }
         return createGETURLRequest(requestUrl: requestUrl)
-        //
-        //
-        //        var urlRequest = URLRequest(url: requestUrl)
-        //        urlRequest.httpMethod = "GET"
-        //        urlRequest.allHTTPHeaderFields = [
-        //            "Accept": "application/json",
-        //            "Content-Type": "application/json; charset=UTF-8"
-        //        ]
-        //
-        //        return urlRequest
     }
 
     static func createBestStoriesGETURLRequest() throws -> URLRequest {
@@ -83,15 +105,6 @@ struct HackerNewsEndpooint {
         }
 
         return createGETURLRequest(requestUrl: requestUrl)
-
-        //        var urlRequest = URLRequest(url: requestUrl)
-        //        urlRequest.httpMethod = "GET"
-        //        urlRequest.allHTTPHeaderFields = [
-        //            "Accept": "application/json",
-        //            "Content-Type": "application/json; charset=UTF-8"
-        //        ]
-        //
-        //        return urlRequest
     }
 
     static func userGETURLRequest(id: String) throws -> URLRequest {
@@ -110,15 +123,6 @@ struct HackerNewsEndpooint {
 
         Logger.service.debug("user request url: \(requestUrl, privacy: .public)")
         return createGETURLRequest(requestUrl: requestUrl)
-
-        //        var urlRequest = URLRequest(url: requestUrl)
-        //        urlRequest.httpMethod = "GET"
-        //        urlRequest.allHTTPHeaderFields = [
-        //            "Accept": "application/json",
-        //            "Content-Type": "application/json; charset=UTF-8"
-        //        ]
-        //
-        //        return urlRequest
     }
 
     ///    Stories, comments, jobs, Ask HNs and even polls are just items.
@@ -140,15 +144,6 @@ struct HackerNewsEndpooint {
         Logger.service.debug("user request url: \(requestUrl, privacy: .public)")
 
         return createGETURLRequest(requestUrl: requestUrl)
-
-        //        var urlRequest = URLRequest(url: requestUrl)
-        //        urlRequest.httpMethod = "GET"
-        //        urlRequest.allHTTPHeaderFields = [
-        //            "Accept": "application/json",
-        //            "Content-Type": "application/json; charset=UTF-8"
-        //        ]
-        //
-        //        return urlRequest
     }
 
     static func createGETURLRequest(requestUrl: URL) -> URLRequest {

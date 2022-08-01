@@ -1,53 +1,82 @@
+---
+# See all rules: https://github.com/realm/SwiftLint/blob/master/Rules.md
+
 included:
-  - createMIDI/
-  - Sources
-  - Tests
+    - Sources
+    - Tests
 
-excluded: # paths to ignore during linting. Takes precedence over `included`.
-  - .build
+# paths to ignore during linting. Takes precedence over `included`.
+excluded:
+    - .build
+    - .swiftpm
+    - .git
+    - .github
+    - build
+    - docs
+    - SupportingFiles
+    - scripts
+    - Playground
+    - fastlane
+    - Frameworks
+    - DerivedData
 
-disabled_rules: # rule identifiers to exclude from running
-  - todo
-  - identifier_name
-  - nesting
-  - function_parameter_count
-  - trailing_whitespace
-  - vertical_whitespace
-  - closure_parameter_position
-  - cyclomatic_complexity
+# rule identifiers to exclude from running
+disabled_rules:
+    - todo
+    - identifier_name
+    - nesting
+    - function_parameter_count
+    - trailing_whitespace
+    - vertical_whitespace
+    - closure_parameter_position
+    - cyclomatic_complexity
+    - discourage_print    # custom rule defined below
 
-opt_in_rules: # some rules are only opt-in
-  - control_statement
-  - empty_count
-#  - trailing_newline
-  - colon
-  - comma
+# some rules are only opt-in
+opt_in_rules:
+    - control_statement
+    - empty_count
+    - colon
+    - comma
 
 identifier_name:
-  min_length: 1
+    min_length: 1
 
 line_length: 510
 
 type_body_length:
-  - 300 # warning
-  - 400 # error
+    - 300    # warning
+    - 400    # error
 
 # or they can set both explicitly
 file_length:
-  warning: 600
-  error: 1200
+    warning: 600
+    error: 1200
 
-large_tuple: # warn user when using 3 values in tuple, give error if there are 4
-  - 3
-  - 4
+# warn user when using 3 values in tuple, give error if there are 4
+large_tuple:
+    - 3
+    - 4
 
 # naming rules can set warnings/errors for min_length and max_length
 # additionally they can set excluded names
 type_name:
-  min_length: 4 # only warning
-  max_length: # warning and error
+    min_length: 4    # only warning
+    max_length:     # warning and error
     warning: 30
     error: 35
-  excluded: iPhone # excluded via string
+    excluded: iPhone    # excluded via string
 
-reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, junit, html, emoji)
+# reporter type (xcode, json, csv, checkstyle, junit, html, emoji)
+reporter:
+    "xcode"
+
+custom_rules:
+    discourage_print:
+        included: ".*\\.swift"
+        name: "print()"
+        regex: "((\\bprint)|(Swift\\.print))\\s*\\("
+        message: "Prefer Logger/os.log over  print()"
+        severity: warning
+
+...

@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+xcrun swift run hncli --display-brief --fetch-limit 5 --new

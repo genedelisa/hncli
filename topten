@@ -1,3 +1,3 @@
 #!/usr/bin/env zsh
 
-xcrun swift run hncli TopStories --display-brief --fetch-limit 10
+xcrun swift run hncli --display-brief --fetch-limit 10 --top

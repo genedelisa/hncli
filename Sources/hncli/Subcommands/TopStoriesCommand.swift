@@ -70,7 +70,8 @@ extension MainCommandWithSubcommands {
 
                 // returns an array of Items
                 // let stories = try await api.fetchTopStories(options.fetchLimit)
-                let stories = try await api.fetchBestStories(options.fetchLimit)
+                // let stories = try await api.fetchBestStories(options.fetchLimit)
+                let stories = try await api.fetchStories(kind: .topstories, fetchLimit: options.fetchLimit)
 
                 Logger.command.info("story count: \(stories.count, privacy: .public)")
 
@@ -93,7 +94,6 @@ extension MainCommandWithSubcommands {
                             // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
                             ColorConsole.consoleMessage(s)
                         }
-
                     } else {
                         if let s = story.type {
                             ColorConsole.consoleMessage("Item type: \(s)")
@@ -128,7 +128,6 @@ extension MainCommandWithSubcommands {
 
                     print()
                 }
-
             } catch {
                 Logger.command.error("\(#function) \(error.localizedDescription, privacy: .public)")
                 ColorConsole.errorMessage(error.localizedDescription)

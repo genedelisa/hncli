@@ -96,7 +96,6 @@ extension Logger {
                 .getEntries(at: position, matching: predicate)
                 .compactMap { $0 as? OSLogEntryLog }
                 .map { "[\($0.date.formatted())] [\($0.category)] \($0.composedMessage)" }
-
         } catch {
             Logger.error.warning("\(error.localizedDescription, privacy: .public)")
         }
@@ -137,7 +136,6 @@ extension Logger {
             entries = try store
                 .getEntries(at: position, matching: predicate)
                 .compactMap { $0 as? OSLogEntryLog }
-
         } catch {
             Logger.error.warning("\(error.localizedDescription, privacy: .public)")
         }

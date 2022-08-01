@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 `hncli` adheres to [Semantic Versioning](http://semver.org/).
 
@@ -10,10 +11,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ---
 
 ## 0.0.1 - 2022-07-26
+
 ### Added
+
 - Initial version
 
-## [Main](https://github.com/genedelisa/hncli)
+## [main](https://github.com/genedelisa/hncli)
+
+## 0.0.2 - 2022-
+
 ### Added
 
 ### Changed
