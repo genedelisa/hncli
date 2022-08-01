@@ -134,13 +134,7 @@ struct MainCommand: AsyncParsableCommand {
                 stories = try await api.fetchStories(kind: .showstories, fetchLimit: fetchLimit)
             }
 
-//            Color256.DEFAULT_FG = .orangeRed1
-//            Color256.DEFAULT_BG = .yellow3
-//            ColorConsole.consoleMessage("🔭 Fetching \(self.searchType.rawValue) items limited to \(self.fetchLimit)")
-//            Color256.DEFAULT_FG = .gold1
-//            Color256.DEFAULT_BG = .darkBlue
 
-            // this is simpler :)
             Color256.print("🔭 Fetching \(searchType.rawValue) items limited to \(fetchLimit)",
                            fg: .green1, bg: .darkBlue, att: [.italic])
             print()
@@ -207,60 +201,14 @@ struct MainCommand: AsyncParsableCommand {
         }
 
         if showLogging {
-            // Logger.exportEntries()
-
-//            print("now general starting yesterday")
-//            let date = Calendar.current.date(byAdding: Calendar.Component.day, value: -1, to: Date())
-//            var entries = Logger.exportEntries(category: "General", date: date)
-//            for entry in entries {
-//                print("\(entry)")
-//            }
-//
-//            entries = Logger.exportEntries()
-//            print("no args")
-//            for entry in entries {
-//                print("\(entry)")
-//            }
-
+            
             let entries: [OSLogEntryLog] = Logger.findEntries(subsystem: OSLog.subsystem)
             let estrings =
-//                entries.map {
-//                    return String(format: "%s",  $0.composedMessage)
-//                    return String(format: "[%s] [%s]\t%s", $0.date.formatted(), $0.category, $0.composedMessage)
-//                    }
-                entries.map {
-                    (entry: OSLogEntryLog) -> String in
-
-//                var levelString = ""
-//                switch entry.level {
-//                case .error:
-//                    levelString = "error"
-//                case .undefined:
-//                    levelString = "undefined"
-//                case .debug:
-//                    levelString = "debug"
-//                case .info:
-//                    levelString = "info"
-//                case .notice:
-//                    levelString = "notice"
-//                case .fault:
-//                    levelString = "fault"
-//                @unknown default:
-//                    levelString = "unknown"
-//                }
-
-                    // TODO: why is my interp not called?
-                    "\(entry)"
-
-                    // return String(format: "%@",  entry.composedMessage)
-
-//                let category = entry.category.padding(toLength: 15, withPad: " ", startingAt: 0)
-                    // no return String(format: "[%@] [%10.10@]\t%@", entry.date.formatted(), category, entry.composedMessage)
-//                return "[\(entry.date.formatted())] [\(category)] [\(levelString)]\t\(entry.composedMessage)"
-                }
-
-//            entries.map { "[\($0.date.formatted())] [\($0.category)] [\($0.level)]\t\t\($0.composedMessage)" }
-
+            entries.map {
+                (entry: OSLogEntryLog) -> String in
+                "\(entry)"
+            }
+            
             for entry in estrings {
                 print("\(entry)")
             }

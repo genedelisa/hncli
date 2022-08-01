@@ -29,13 +29,14 @@ import os.log
 //
 
 
-public enum StoryKind: String {
+public enum ItemKind: String {
     case beststories
     case newstories
     case topstories
     case askstories
     case jobstories
     case showstories
+    case maxitem
 }
 
 @available(iOS 14.0, *)
@@ -44,14 +45,15 @@ public class HackerNewsAPIService {
     let logger = Logger.service
 
     public var verbose = false
+    
     public var displayJSON = false
 
     public init() {
         logger.trace("\(#function)")
     }
     
-    func fetchIDs(kind: StoryKind) async throws -> [Int] {
-        let urlRequest = try HackerNewsEndpooint.createGETURLRequest(kind: kind)
+    func fetchIDs(kind: ItemKind) async throws -> [Int] {
+        let urlRequest = try HackerNewsEndpooint.buildItemRequest(kind: kind)
         return try await fetchIDs(urlRequest: urlRequest)
     }
     
@@ -80,12 +82,12 @@ public class HackerNewsAPIService {
         } catch {
             Logger.service.debug("\(#function)")
             // print("\(#function) \(error)")
-            Logger.service.error("Error: \(error.localizedDescription, privacy: .public)")
+            Logger.service.error("\(error.localizedDescription, privacy: .public)")
             throw HackerNewsAPIError.invalidResponse(reason: "Fetching IDs: \(error.localizedDescription)")
         }
     }
 
-    public func fetchStories(kind: StoryKind, fetchLimit: Int = 500) async throws -> [Item] {
+    public func fetchStories(kind: ItemKind, fetchLimit: Int = 500) async throws -> [Item] {
         var items: [Item] = []
 
         do {
@@ -136,7 +138,7 @@ public class HackerNewsAPIService {
     func fetchItem(id: Int) async throws -> Item {
         logger.trace("\(#function)")
 
-        let urlRequest = try HackerNewsEndpooint.itemGETURLRequest(id: id)
+        let urlRequest = try HackerNewsEndpooint.buildItemGETURLRequest(id: id)   //.itemGETURLRequest(id: id)
 
         Logger.service.debug("\(urlRequest)")
 

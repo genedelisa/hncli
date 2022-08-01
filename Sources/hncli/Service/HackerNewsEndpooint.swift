@@ -21,19 +21,30 @@
 // https://opensource.org/licenses/MIT
 
 import Foundation
-// import Combine
 import os.log
+
+//    Ask, Show and Job Stories
+//    Up to 200 of the latest Ask HN, Show HN, and Job stories are at /v0/askstories, /v0/showstories, and /v0/jobstories.
+
 
 struct HackerNewsEndpooint {
     public static let endpoint = "https://hacker-news.firebaseio.com/v0"
-
-    static func createStoryGETURLRequest(id: Int) throws -> URLRequest {
+    
+    static func buildItemRequest(kind: ItemKind) throws -> URLRequest {
+        guard let requestUrl = URL(string: "\(endpoint)/\(kind.rawValue).json") else {
+            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
+        }
+        return buildGETURLRequest(requestUrl: requestUrl)
+    }
+    
+    static func buildItemGETURLRequest(id: Int) throws -> URLRequest {
         Logger.service.trace("\(#function)")
 
         var uc = URLComponents()
         uc.scheme = "https"
         uc.host = "hacker-news.firebaseio.com"
         uc.path = "/v0/item/\(id).json"
+        //uc.fragment
 
         // eg "https://hacker-news.firebaseio.com/v0/item/32186203.json")
 
@@ -41,73 +52,11 @@ struct HackerNewsEndpooint {
             throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
         }
         Logger.service.debug("story GET request url: \(requestUrl, privacy: .public)")
-        return createGETURLRequest(requestUrl: requestUrl)
+        return buildGETURLRequest(requestUrl: requestUrl)
     }
 
-    static func createMaxItemGETURLRequest() throws -> URLRequest {
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/maxitem.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
 
-//    Ask, Show and Job Stories
-//
-//    Up to 200 of the latest Ask HN, Show HN, and Job stories are at /v0/askstories, /v0/showstories, and /v0/jobstories.
-//
-
-    static func createAskIDsGETURLRequest() throws -> URLRequest {
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/askstories.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
-
-    static func createShowIDsGETURLRequest() throws -> URLRequest {
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/showstories.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
-
-    static func createJobIDsGETURLRequest() throws -> URLRequest {
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/jobstories.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
-
-    static func createGETURLRequest(kind: StoryKind) throws -> URLRequest {
-        
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/\(kind.rawValue).json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
-    
-    static func createNewStoriesGETURLRequest() throws -> URLRequest {
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/newstories.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
-
-    static func createBestStoriesGETURLRequest() throws -> URLRequest {
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/beststories.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
-
-    static func createTopStoriesGETURLRequest() throws -> URLRequest {
-        guard let requestUrl = URL(string: "https://hacker-news.firebaseio.com/v0/topstories.json") else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
-
-    static func userGETURLRequest(id: String) throws -> URLRequest {
+    static func buildUserGETURLRequest(id: Int) throws -> URLRequest {
         Logger.service.trace("\(#function)")
 
         var uc = URLComponents()
@@ -122,31 +71,10 @@ struct HackerNewsEndpooint {
         }
 
         Logger.service.debug("user request url: \(requestUrl, privacy: .public)")
-        return createGETURLRequest(requestUrl: requestUrl)
+        return buildGETURLRequest(requestUrl: requestUrl)
     }
 
-    ///    Stories, comments, jobs, Ask HNs and even polls are just items.
-    ///    They're identified by their ids, which are unique integers, and live under /v0/item/<id>.
-    static func itemGETURLRequest(id: Int) throws -> URLRequest {
-        Logger.service.trace("\(#function)")
-
-        var uc = URLComponents()
-        uc.scheme = "https"
-        uc.host = "hacker-news.firebaseio.com"
-        uc.path = "/v0/item/\(id).json"
-
-        // comment: https://hacker-news.firebaseio.com/v0/item/2921983.json?print=pretty
-
-        guard let requestUrl = uc.url else {
-            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
-        }
-
-        Logger.service.debug("user request url: \(requestUrl, privacy: .public)")
-
-        return createGETURLRequest(requestUrl: requestUrl)
-    }
-
-    static func createGETURLRequest(requestUrl: URL) -> URLRequest {
+    static func buildGETURLRequest(requestUrl: URL) -> URLRequest {
         var urlRequest = URLRequest(url: requestUrl)
         urlRequest.httpMethod = "GET"
         urlRequest.allHTTPHeaderFields = [
@@ -158,47 +86,3 @@ struct HackerNewsEndpooint {
     }
 }
 
-enum HackerNews {
-    public static let endpoint = "https://hacker-news.firebaseio.com/v0"
-
-    /// HackerNews REST API methods
-    enum API {
-        /// HackerNews User REST API methods
-        enum User {
-            case id(String)
-
-            public var urlString: String {
-                switch self {
-                case let .id(userId):
-                    return "\(HackerNews.endpoint)/user/\(userId).json"
-                }
-            }
-        }
-
-        /// HackerNews Stories REST API methods
-        enum Stories: String {
-            case top
-            case new
-            case best
-            case ask
-            case job
-            case show
-
-            public var urlString: String {
-                "\(HackerNews.endpoint)/\(rawValue)stories.json"
-            }
-        }
-
-        /// HackerNews Item REST API methods
-        enum Item {
-            case id(Int)
-
-            public var urlString: String {
-                switch self {
-                case let .id(storyId):
-                    return "\(HackerNews.endpoint)/item/\(storyId).json"
-                }
-            }
-        }
-    }
-}
