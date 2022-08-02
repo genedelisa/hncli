@@ -83,6 +83,11 @@ struct ColorConsole {
                 Color256.DEFAULT_BG = c
             }
         }
+        
+        Logger.ui.debug("Effective foreground  \(String(describing: Color256.DEFAULT_FG), privacy: .public) ")
+        Logger.ui.debug("Effective background  \(String(describing: Color256.DEFAULT_BG), privacy: .public) ")
+
+
     }
     
 

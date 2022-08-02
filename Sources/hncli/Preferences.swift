@@ -24,10 +24,6 @@ import GDTerminalColor
 import os.log
 import OSLog
 
-
-// commandLine: defaults write com.rockhoppertech.hncli thing value
-// defaults write com.rockhoppertech.hncli verbose true
-
 class Preferences {
     static let sharedInstance = Preferences()
     
@@ -41,73 +37,22 @@ class Preferences {
         case brief
     }
     
-//    struct Key {
-//        static let backgroundColorName = "backgroundColorName"
-//        static let foregroundColorName = "foregroundColorName"
-//    }
-    
     // will be in ~/Library/Preferences/hncli.plist
-
-    // static let suiteName = "com.rockhoppertech.hncli"
-    // Using your own bundle identifier as an NSUserDefaults suite name does not make sense and will not work. Break on _NSUserDefaults_Log_Nonsensical_Suites to find this
     
     static let suiteName = "hncli"
     
-    //var userDefaults = UserDefaults.standard
-   // var userDefaults = UserDefaults(suiteName: Self.suiteName)
-    
     let userDefaults: UserDefaults
     
-    
     init() {
-        userDefaults = UserDefaults(suiteName: Self.suiteName)!
+        guard
+            let defaults = UserDefaults(suiteName: Self.suiteName)
+        else { exit(EXIT_FAILURE) }
+        self.userDefaults = defaults
         
         registerDefaults()
-        
-        displayAllInSuite()
-        
-        //showPreferences()
-        
-        
-//        guard
-//            userDefaults != nil
-//        else { exit(EXIT_FAILURE) }
-        
-//        if let dict = UserDefaults.standard.persistentDomain(forName: "com.rockhoppertech.hncli") {
-//            print(dict)
-//        }
-
-        
-//        guard
-//            userDefaults != nil
-//        else {
-//            print("Error getting user defaults for \(Self.suiteName)")
-//            exit(EXIT_FAILURE)
-//        }
-        
-        if let ev = envValue(key: "BGCOLOR") {
-            print("environment bgcolor: \(ev)")
-        }
-        
-//        userDefaults.register(defaults: [
-//            "verbose" : false
-//        ] )
-//
-        //self.verbose = userDefaults.bool(forKey: "verbose")
-        //print("user defaults verbose: \(self.verbose)")
-        
-        //userDefaults.set("red", forKey: Keys.foregroundColorName.rawValue)
-        //userDefaults.set("blue", forKey: Keys.backgroundColorName.rawValue)
-        
-//        addPreference(key: "defaultColor", value: XTColorName.deepPink4)
-        
-
-       
     }
     
-    
-    
-    @objc dynamic var numberOfRuns: Int {
+    var numberOfRuns: Int {
         set {
             userDefaults.set(newValue, forKey: Keys.numberOfRuns.rawValue)
         }
@@ -115,8 +60,17 @@ class Preferences {
             userDefaults.integer(forKey: Keys.numberOfRuns.rawValue)
         }
     }
-
-    @objc dynamic var foregroundColorName: String? {
+    
+    var fetchLimit: Int {
+        set {
+            userDefaults.set(newValue, forKey: Keys.fetchLimit.rawValue)
+        }
+        get {
+            userDefaults.integer(forKey: Keys.fetchLimit.rawValue)
+        }
+    }
+    
+    var foregroundColorName: String? {
         set {
             userDefaults.set(newValue, forKey: Keys.foregroundColorName.rawValue)
         }
@@ -125,7 +79,7 @@ class Preferences {
         }
     }
     
-    @objc dynamic var backgroundColorName: String? {
+    var backgroundColorName: String? {
         set {
             userDefaults.set(newValue, forKey: Keys.backgroundColorName.rawValue)
         }
@@ -133,7 +87,6 @@ class Preferences {
             userDefaults.string(forKey: Keys.backgroundColorName.rawValue)
         }
     }
-
     
     var verbose: Bool {
         set {
@@ -152,8 +105,9 @@ class Preferences {
             userDefaults.bool(forKey: Keys.brief.rawValue)
         }
     }
-
-    @objc dynamic var firstRunDate: Date? {
+    
+    // @objc dynamic
+    var firstRunDate: Date? {
         set {
             userDefaults.set(newValue, forKey: Keys.firstRunDate.rawValue)
         }
@@ -161,19 +115,19 @@ class Preferences {
             userDefaults.object(forKey: Keys.firstRunDate.rawValue) as? Date
         }
     }
-
+    
     func isFirstRun() -> Bool {
-
+        
         if firstRunDate == nil {
             firstRunDate = Date()
             return true
         }
-
+        
         return false
     }
-
+    
     // MARK: Default Values
-
+    
     func registerDefaults() {
         print("registering defaults")
         userDefaults.register(defaults: [
@@ -181,35 +135,21 @@ class Preferences {
             Keys.backgroundColorName.rawValue: "blue",
             Keys.verbose.rawValue: false,
             Keys.brief.rawValue: true,
+            Keys.fetchLimit.rawValue: 5,
             Keys.numberOfRuns.rawValue: 0,
             Keys.firstRunDate.rawValue: 0
         ])
     }
     
-    
-    
-    func addPreference(key: String, value: Encodable) {
-        //precondition(userDefaults != nil)
-//        guard let defaults = userDefaults else {
-//            print("Cannot create user defaults")
-//            return
-//        }
-        let defaults = userDefaults
-        
-
+    // this takes a lot of time. Find a better way.
+    func addEncodedPreference(key: String, value: Encodable) {
         let data = try? PropertyListEncoder().encode(value)
-        defaults.set(data, forKey: key)
+        userDefaults.set(data, forKey: key)
     }
-
+    
     func encodeColorName(key: String, value: XTColorName) {
-//        guard let defaults = userDefaults else {
-//            print("Cannot create user defaults")
-//            return
-//        }
-        let defaults = userDefaults
-
         let data = try? PropertyListEncoder().encode(value)
-        defaults.set(data, forKey: key)
+        userDefaults.set(data, forKey: key)
     }
     
     func decodeColorName(data: Data) -> XTColorName? {
@@ -222,22 +162,19 @@ class Preferences {
         }
     }
     
-  
-
     // zsh: typeset -x BGCOLOR=foo
     // bash: export BGCOLOR=foo
     func envValue(key: String) -> String? {
         if let value = ProcessInfo.processInfo.environment[key]  {
-            print("\(value)")
             return value
         }
-        print("no env value for key \(key)")
+        Logger.ui.error("no env value for key \(key)")
         return nil
     }
-
-    func showPreferences() {
+    
+    func printPreferences() {
         print("\(#function)")
-
+        
         print("All preferences")
         let dict = userDefaults.dictionaryRepresentation()
         for (k,v) in dict {
@@ -245,9 +182,9 @@ class Preferences {
         }
     }
     
-    func displayAllInSuite() {
+    func printAllInSuite() {
         print("\(#function)")
-
+        
         print("suiteName: \(Self.suiteName)")
         
         if let dict = userDefaults.persistentDomain(forName: Self.suiteName) {
@@ -257,139 +194,21 @@ class Preferences {
         }
     }
     
-    
     func resetAll() {
         //UserDefaults.standard.removePersistentDomain(forName: bundleID)
         Keys.allCases.forEach { userDefaults.removeObject(forKey: $0.rawValue) }
         userDefaults.synchronize()
     }
-
+    
+    static func resetDefaults() {
+        if let bundleID = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            return
+        }
+        if let bundleID = Bundle.module.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            return
+        }
+    }
+    
 }
-
-//public let UserDefaultsSuiteName = "com.rockhoppertech.hncli"
-//public let defaults = UserDefaults(suiteName: UserDefaultsSuiteName)!
-
-//public extension UserDefaults {
-//
-//    // probably not the right place for this?
-//    //var UserDefaultsSuiteName: String { "com.rockhoppertech.hncli" }
-//
-//    enum Keys: String, CaseIterable {
-//        case firstRunDate = "first-run-date"
-//        case numberOfRuns = "number-of-runs"
-//        case foregroundColorName = "foreground-color-name"
-//        case backgroundColorName = "background-color-name"
-//        case fetchLimit = "fetch-limit"
-//        case verbose
-//        case brief
-//    }
-//
-//    func displayAll() {
-//        for (k,v) in self.dictionaryRepresentation() {
-//            print("\(k) : \(v)")
-//        }
-//    }
-//
-//    func displayAllInSuite() {
-//        print("suiteName: \(UserDefaultsSuiteName)")
-//
-//        if let dict = persistentDomain(forName: UserDefaultsSuiteName) {
-//            for (k,v) in dict {
-//                print("\(k) : \(v)")
-//            }
-//        }
-//    }
-//
-//
-//    func resetAll() {
-//        //UserDefaults.standard.removePersistentDomain(forName: bundleID)
-//
-//        Keys.allCases.forEach { removeObject(forKey: $0.rawValue) }
-//        defaults.synchronize()
-//    }
-//
-//    func unset(key: Keys) {
-//        removeObject(forKey: key.rawValue)
-//        defaults.synchronize()
-//    }
-//
-//
-//    @objc dynamic var numberOfRuns: Int {
-//        set {
-//            set(newValue, forKey: Keys.numberOfRuns.rawValue)
-//        }
-//        get {
-//            integer(forKey: Keys.numberOfRuns.rawValue)
-//        }
-//    }
-//
-//    @objc dynamic var foregroundColorName: String? {
-//        set {
-//            set(newValue, forKey: Keys.foregroundColorName.rawValue)
-//        }
-//        get {
-//            string(forKey: Keys.foregroundColorName.rawValue)
-//        }
-//    }
-//
-//    @objc dynamic var backgroundColorName: String? {
-//        set {
-//            set(newValue, forKey: Keys.backgroundColorName.rawValue)
-//        }
-//        get {
-//            string(forKey: Keys.backgroundColorName.rawValue)
-//        }
-//    }
-//
-//
-//
-//    @objc dynamic var verbose: String? {
-//        set {
-//            set(newValue, forKey: Keys.verbose.rawValue)
-//        }
-//        get {
-//            string(forKey: Keys.verbose.rawValue)
-//        }
-//    }
-//
-//    var brief: Bool? {
-//        set {
-//            set(newValue, forKey: Keys.brief.rawValue)
-//        }
-//        get {
-//            bool(forKey: Keys.brief.rawValue)
-//        }
-//    }
-//
-//    @objc dynamic var firstRunDate: Date? {
-//        set {
-//            set(newValue, forKey: Keys.firstRunDate.rawValue)
-//        }
-//        get {
-//            object(forKey: Keys.firstRunDate.rawValue) as? Date
-//        }
-//    }
-//
-//    func isFirstRun() -> Bool {
-//
-//        if firstRunDate == nil {
-//            firstRunDate = Date()
-//            return true
-//        }
-//
-//        return false
-//    }
-//
-//    // MARK: Default Values
-//
-//    func registerDefaults() {
-//
-//        self.register(defaults: [
-//            Keys.foregroundColorName.rawValue: "",
-//            Keys.backgroundColorName.rawValue: "",
-//            Keys.verbose.rawValue: "",
-//            Keys.numberOfRuns.rawValue: 0
-//        ])
-//    }
-//
-//}

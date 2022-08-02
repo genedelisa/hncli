@@ -75,7 +75,8 @@ struct MainCommand: AsyncParsableCommand {
     @Option(name: .long,
             help: ArgumentHelp(NSLocalizedString("Number of items to fetch.", comment: ""),
                                discussion: "This will fetch only this number of items regardless of the number of IDs"))
-    var fetchLimit: Int = 500
+    var fetchLimit: Int = Preferences.sharedInstance.fetchLimit
+
 
     @Flag(help: ArgumentHelp(NSLocalizedString("Display the log entries for debugging.", comment: ""),
                              discussion: "Display the log entries for debugging.")
@@ -83,13 +84,13 @@ struct MainCommand: AsyncParsableCommand {
     var showLogging = false
 
     @Option(name: [.customShort("f"), .long],
-            help: ArgumentHelp(NSLocalizedString("default foreground color", comment: ""),
+            help: ArgumentHelp(NSLocalizedString("foreground color", comment: ""),
                                discussion: "."))
     var foreground: String?
     
 
     @Option(name: [.customShort("b"), .long],
-            help: ArgumentHelp(NSLocalizedString("default background color", comment: ""),
+            help: ArgumentHelp(NSLocalizedString("background color", comment: ""),
                                discussion: "."))
     var background: String?
     
@@ -98,7 +99,22 @@ struct MainCommand: AsyncParsableCommand {
                                discussion: "."))
     var colorNames = false
     
+    @Option(name: [.long],
+            help: ArgumentHelp(NSLocalizedString("default foreground color", comment: ""),
+                               discussion: "."))
+    var defaultForeground: String?
     
+    @Option(name: [.long],
+            help: ArgumentHelp(NSLocalizedString("default background color", comment: ""),
+                               discussion: "."))
+    var defaultBackground: String?
+    
+    @Option(name: [.long],
+            help: ArgumentHelp(NSLocalizedString("default fetch limit", comment: ""),
+                               discussion: "."))
+    var defaultFetchLimit: Int?
+
+
 
     mutating func validate() throws {
         guard fetchLimit >= 1 else {
@@ -114,8 +130,20 @@ struct MainCommand: AsyncParsableCommand {
                 throw ValidationError("Invalid color: \(bg) for 'background'")
             }
         }
+        
+        if let value = defaultForeground {
+            if !XTColorName.colorExists(name: value) {
+                throw ValidationError("Invalid color: \(value) for 'defaultForeground'")
+            }
+        }
+        
+        if let value = defaultBackground {
+            if !XTColorName.colorExists(name: value) {
+                throw ValidationError("Invalid color: \(value) for 'defaultBackground'")
+            }
+        }
+        
     }
-    
     
     func showHelp() {
         if let helpURL = Bundle.module.url(forResource: "help",
@@ -133,13 +161,6 @@ struct MainCommand: AsyncParsableCommand {
         }
     }
     
-//    func printColorNames() {
-//        let arr = XTColorName.allCases.map {String(describing:$0)}.sorted()
-//        for xn in arr {
-//            print("\(xn)")
-//        }
-//    }
-    
     func errorMessage(_ message: String) {
         Color256.print(message,
                        fg: .gold1,
@@ -153,11 +174,26 @@ struct MainCommand: AsyncParsableCommand {
 
 
     func run() async throws {
+        
         guard #available(macOS 12, *) else {
             print("'hncli' isn't supported on this platform.")
             ColorConsole.errorMessage("'hncli' isn't supported on this platform.")
             return
         }
+        
+        // setting the defaults?
+        if let value = defaultForeground {
+            Preferences.sharedInstance.foregroundColorName = value
+        }
+
+        if let value = defaultBackground {
+            Preferences.sharedInstance.backgroundColorName = value
+        }
+
+        if let value = defaultFetchLimit {
+            Preferences.sharedInstance.fetchLimit = value
+        }
+        
         
         ColorConsole.setupColors(foreground: foreground, background: background)
         
@@ -166,39 +202,10 @@ struct MainCommand: AsyncParsableCommand {
             MainCommand.exit(withError: ExitCode.success)
         }
         
-//        if let fg = foreground {
-//            if let c = XTColorName.from(name: fg) {
-//                print("found color for \(fg): \(c)")
-//                Color256.DEFAULT_FG = c
-//            }
-//        }
-//        
-//        if let bg = background {
-//            if let c = XTColorName.from(name: bg) {
-//                print("found color for \(bg): \(c)")
-//                Color256.DEFAULT_BG = c
-//            }
-//        }
-        
-//        for xn in XTColorName.allCases {
-//            if xn.rawValue == 2 {
-//                print("found color 2: \(xn)")
-//                let name = String(describing: xn)
-//                print(name)
-//                break
-//            }
-//            print("checking color: \(xn)")
-//
-//        }
-
-//        if Preferences.sharedInstance.verbose {
-//            print("preferences verbose from cmd: \(verbose)")
-//        }
-        
         if prolixHelp {
             
             showHelp()
-             MainCommand.exit(withError: ExitCode.success)
+            MainCommand.exit(withError: ExitCode.success)
             
             //throw CleanExit.message("End of help message")
             //throw CleanExit.helpRequest(ProlixHelpCommand)
@@ -215,6 +222,8 @@ struct MainCommand: AsyncParsableCommand {
             dateFormat.timeZone = TimeZone.current
             return dateFormat
         }()
+
+
 
         do {
             if verbose {
