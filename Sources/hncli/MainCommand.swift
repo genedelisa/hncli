@@ -29,6 +29,7 @@ import OSLog
 @available(macOS 10.15, *)
 @main
 struct MainCommand: AsyncParsableCommand {
+    
     static var configuration = CommandConfiguration(
         commandName: "hncli ",
         abstract: "Hacker news frobs",
@@ -71,7 +72,7 @@ struct MainCommand: AsyncParsableCommand {
     )
     var displayBrief = false
 
-    @Option(name: .shortAndLong,
+    @Option(name: .long,
             help: ArgumentHelp(NSLocalizedString("Number of items to fetch.", comment: ""),
                                discussion: "This will fetch only this number of items regardless of the number of IDs"))
     var fetchLimit: Int = 500
@@ -81,22 +82,126 @@ struct MainCommand: AsyncParsableCommand {
     )
     var showLogging = false
 
-    @Option(name: .shortAndLong,
+    @Option(name: [.customShort("f"), .long],
             help: ArgumentHelp(NSLocalizedString("default foreground color", comment: ""),
                                discussion: "."))
-    var defaultForeground: String?
+    var foreground: String?
+    
+
+    @Option(name: [.customShort("b"), .long],
+            help: ArgumentHelp(NSLocalizedString("default background color", comment: ""),
+                               discussion: "."))
+    var background: String?
+    
+    @Flag(name: [.long],
+            help: ArgumentHelp(NSLocalizedString("print valid color names", comment: ""),
+                               discussion: "."))
+    var colorNames = false
+    
+    
 
     mutating func validate() throws {
         guard fetchLimit >= 1 else {
             throw ValidationError("Please specify a 'fetchLimit' of at least 1.")
         }
+        if let fg = foreground {
+            if !XTColorName.colorExists(name: fg) {
+                throw ValidationError("Invalid color: \(fg) for 'foreground'")
+            }
+        }
+        if let bg = background {
+            if !XTColorName.colorExists(name: bg) {
+                throw ValidationError("Invalid color: \(bg) for 'background'")
+            }
+        }
     }
+    
+    
+    func showHelp() {
+        if let helpURL = Bundle.module.url(forResource: "help",
+                                           withExtension: "txt") {
+            do {
+                let data = try Data(contentsOf: helpURL)
+                if let s = String(data: data, encoding: .utf8) {
+                    print(s)
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        } else {
+            errorMessage("The help file was not found.")
+        }
+    }
+    
+//    func printColorNames() {
+//        let arr = XTColorName.allCases.map {String(describing:$0)}.sorted()
+//        for xn in arr {
+//            print("\(xn)")
+//        }
+//    }
+    
+    func errorMessage(_ message: String) {
+        Color256.print(message,
+                       fg: .gold1,
+                       bg: .red,
+                       att: [.bold])
+    }
+    
+    func message(_ message: String) {
+        Color256.print(message, terminator: "\n")
+    }
+
 
     func run() async throws {
         guard #available(macOS 12, *) else {
             print("'hncli' isn't supported on this platform.")
             ColorConsole.errorMessage("'hncli' isn't supported on this platform.")
             return
+        }
+        
+        ColorConsole.setupColors(foreground: foreground, background: background)
+        
+        if colorNames {
+            XTColorName.printColorNames()
+            MainCommand.exit(withError: ExitCode.success)
+        }
+        
+//        if let fg = foreground {
+//            if let c = XTColorName.from(name: fg) {
+//                print("found color for \(fg): \(c)")
+//                Color256.DEFAULT_FG = c
+//            }
+//        }
+//        
+//        if let bg = background {
+//            if let c = XTColorName.from(name: bg) {
+//                print("found color for \(bg): \(c)")
+//                Color256.DEFAULT_BG = c
+//            }
+//        }
+        
+//        for xn in XTColorName.allCases {
+//            if xn.rawValue == 2 {
+//                print("found color 2: \(xn)")
+//                let name = String(describing: xn)
+//                print(name)
+//                break
+//            }
+//            print("checking color: \(xn)")
+//
+//        }
+
+//        if Preferences.sharedInstance.verbose {
+//            print("preferences verbose from cmd: \(verbose)")
+//        }
+        
+        if prolixHelp {
+            
+            showHelp()
+             MainCommand.exit(withError: ExitCode.success)
+            
+            //throw CleanExit.message("End of help message")
+            //throw CleanExit.helpRequest(ProlixHelpCommand)
         }
 
         let api = HackerNewsAPIService()
@@ -113,8 +218,8 @@ struct MainCommand: AsyncParsableCommand {
 
         do {
             if verbose {
-                Logger.command.info("Fetchng items limited to \(fetchLimit, privacy: .public)")
-                print("🔭 Fetchng items limited to \(fetchLimit)")
+                Logger.command.info("Fetchng items limited to \(self.fetchLimit, privacy: .public)")
+                print("🔭 Fetchng items limited to \(self.fetchLimit)")
             }
 
             var stories: [Item] = []

@@ -25,16 +25,40 @@ import GDTerminalColor
 import os.log
 
 struct ColorConsole {
-    init() {
-        // Color256.DEFAULT_FG = XTColorName.gold1
+    
+    static func setupColors(foreground: String?, background: String?) {
+        Color256.DEFAULT_FG = XTColorName.gold1
         Color256.DEFAULT_BG = XTColorName.deepPink4
 
-//        if let fg = ProcessInfo.processInfo.environment["DEFAULT_FG"]  {
-//        }
-    }
+        if let value = ProcessInfo.processInfo.environment["FGCOLOR"]  {
+            if let c = XTColorName.from(name: value) {
+                Logger.ui.debug("found env fg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
+                Color256.DEFAULT_FG = c
+            }
+        }
 
-    static var defaultForeground = "gold1"
-    static var defaultBackground = "deepPink4"
+        if let value = ProcessInfo.processInfo.environment["BGCOLOR"]  {
+            if let c = XTColorName.from(name: value) {
+                Logger.ui.debug("found env bg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
+                Color256.DEFAULT_BG = c
+            }
+        }
+        
+        if let value = foreground {
+            if let c = XTColorName.from(name: value) {
+                Logger.ui.debug("found flag fg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
+                Color256.DEFAULT_FG = c
+            }
+        }
+        
+        if let value = background {
+            if let c = XTColorName.from(name: value) {
+                Logger.ui.debug("found flag bg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
+                Color256.DEFAULT_BG = c
+            }
+        }
+    }
+    
 
     /// Print these ansi codes to the console to turn on these colors.
     /// call `Color256.printReset()` to turn them off.
@@ -49,7 +73,7 @@ struct ColorConsole {
             do {
                 fgCode = try Color256.foregroundCode(colorName: fg)
             } catch {
-                Logger.ui.warning("bad color name for foreground \(error.localizedDescription)")
+                Logger.ui.warning("bad color name for foreground \(error.localizedDescription, privacy: .public)")
                 errorMessage("Bad color name: \(fg)")
             }
         }
@@ -61,26 +85,26 @@ struct ColorConsole {
             do {
                 bgCode = try Color256.backgroundCode(colorName: bg)
             } catch {
-                Logger.ui.warning("bad color name for background \(error.localizedDescription)")
+                Logger.ui.warning("bad color name for background \(error.localizedDescription, privacy: .public)")
                 errorMessage("Bad color name: \(bg)")
             }
         }
         print("\(bgCode)")
     }
 
-    static func setDefaultForegound(_ colorName: String) {
-        if let cv = try? XTermColorDict.colorValue(name: colorName) {
-            print("colorName \(colorName) cv \(cv)")
-            if let name = XTColorName(rawValue: cv) {
-                print("default fg to xtcolorname \(name)")
-                Color256.DEFAULT_FG = name
-            } else {
-                Self.errorMessage("Could not create xtcolorname from rawValue")
-            }
-        } else {
-            Self.errorMessage("\(defaultForeground) is an invalid name")
-        }
-    }
+//    static func setDefaultForegound(_ colorName: String) {
+//        if let cv = try? XTermColorDict.colorValue(name: colorName) {
+//            print("colorName \(colorName) cv \(cv)")
+//            if let name = XTColorName(rawValue: cv) {
+//                print("default fg to xtcolorname \(name)")
+//                Color256.DEFAULT_FG = name
+//            } else {
+//                Self.errorMessage("Could not create xtcolorname from rawValue")
+//            }
+//        } else {
+//            Self.errorMessage("\(defaultForeground) is an invalid name")
+//        }
+//    }
 
     static func consoleMessage(_ message: String) {
         Color256.print(message, terminator: "\n")
@@ -94,4 +118,44 @@ struct ColorConsole {
 
         Color256.printStderr(message)
     }
+}
+
+
+// TODO: move this to xtcolorname
+
+extension XTColorName {
+    
+    static var nameDict = [String: XTColorName]()
+
+    public static func colorExists(name: String) -> Bool {
+        
+        if nameDict.isEmpty {
+            buildNameDict()
+        }
+        return nameDict[name] != nil
+    }
+    
+    public static func from(name: String) -> XTColorName? {
+        
+        if nameDict.isEmpty {
+            buildNameDict()
+        }
+        return nameDict[name]
+    }
+    
+    static func buildNameDict() {
+        
+        for color in Self.allCases {
+            nameDict[String(describing: color)] = color
+        }
+    }
+    
+    public static func printColorNames() {
+        let arr = XTColorName.allCases.map {String(describing:$0)}.sorted()
+        for xn in arr {
+            print("\(xn)")
+        }
+    }
+
+    
 }

@@ -140,7 +140,7 @@ public class HackerNewsAPIService {
 
         let urlRequest = try HackerNewsEndpooint.buildItemGETURLRequest(id: id)   //.itemGETURLRequest(id: id)
 
-        Logger.service.debug("\(urlRequest)")
+        Logger.service.debug("\(urlRequest, privacy: .public)")
 
         do {
             let (data, response) = try await URLSession.shared.data(for: urlRequest)
