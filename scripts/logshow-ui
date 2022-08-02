@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+/usr/bin/log show \
+	--info --debug \
+	--last 1h \
+	--predicate '(subsystem == "com.rockhoppertech.hncli") && (category == "UI")' \
+	--style compact

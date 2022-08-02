@@ -26,9 +26,35 @@ import os.log
 
 struct ColorConsole {
     
+    /// Set up the colors.
+    ///
+    /// - A default is set for the foreground and background. These are used in the absence of the others.
+    /// - Then the UserDefaults values for fg and bg are checked. These override the default.
+    /// - Then the environment values FGCOLOR and BGCOLOR are checks. These override the UserDefaults.
+    /// - Finally the command line flags are checked and used if set.
+    ///
+    /// - Parameters:
+    ///   - foreground: color name
+    ///   - background: color name
     static func setupColors(foreground: String?, background: String?) {
         Color256.DEFAULT_FG = XTColorName.gold1
         Color256.DEFAULT_BG = XTColorName.deepPink4
+        Logger.ui.debug("Color256.DEFAULT_FG  \(String(describing: Color256.DEFAULT_FG), privacy: .public) ")
+        Logger.ui.debug("Color256.DEFAULT_BG  \(String(describing: Color256.DEFAULT_BG), privacy: .public) ")
+
+        if let value = Preferences.sharedInstance.foregroundColorName {
+            if let c = XTColorName.from(name: value) {
+                Logger.ui.debug("found preferences fg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
+                Color256.DEFAULT_FG = c
+            }
+        }
+        
+        if let value = Preferences.sharedInstance.backgroundColorName {
+            if let c = XTColorName.from(name: value) {
+                Logger.ui.debug("found preferences bg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
+                Color256.DEFAULT_BG = c
+            }
+        }
 
         if let value = ProcessInfo.processInfo.environment["FGCOLOR"]  {
             if let c = XTColorName.from(name: value) {
@@ -68,18 +94,24 @@ struct ColorConsole {
     ///   - fg: possible foreground text color. Xwindow color name
     ///   - bg: possible background text color. Xwindow color name
     static func enablePrintColors(fg: String?, bg: String?) {
+        
         var fgCode = Color256.foregroundCode(color: XTColorName.gold1)
-        if let fg = fg {
+        if let fg = fg,
+           XTColorName.colorExists(name: fg) {
             do {
                 fgCode = try Color256.foregroundCode(colorName: fg)
             } catch {
                 Logger.ui.warning("bad color name for foreground \(error.localizedDescription, privacy: .public)")
                 errorMessage("Bad color name: \(fg)")
             }
+        } else {
+            Logger.ui.warning("bad color name for foreground")
         }
+        
         // this sets the color. it's the ansi code.
         print("\(fgCode)")
 
+        
         var bgCode = Color256.backgroundCode(color: XTColorName.navyBlue)
         if let bg = bg {
             do {
@@ -92,19 +124,6 @@ struct ColorConsole {
         print("\(bgCode)")
     }
 
-//    static func setDefaultForegound(_ colorName: String) {
-//        if let cv = try? XTermColorDict.colorValue(name: colorName) {
-//            print("colorName \(colorName) cv \(cv)")
-//            if let name = XTColorName(rawValue: cv) {
-//                print("default fg to xtcolorname \(name)")
-//                Color256.DEFAULT_FG = name
-//            } else {
-//                Self.errorMessage("Could not create xtcolorname from rawValue")
-//            }
-//        } else {
-//            Self.errorMessage("\(defaultForeground) is an invalid name")
-//        }
-//    }
 
     static func consoleMessage(_ message: String) {
         Color256.print(message, terminator: "\n")
