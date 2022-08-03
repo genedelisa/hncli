@@ -41,7 +41,7 @@ struct ColorConsole {
         Color256.DEFAULT_BG = XTColorName.deepPink4
         Logger.ui.debug("Color256.DEFAULT_FG  \(String(describing: Color256.DEFAULT_FG), privacy: .public) ")
         Logger.ui.debug("Color256.DEFAULT_BG  \(String(describing: Color256.DEFAULT_BG), privacy: .public) ")
-
+        
         if let value = Preferences.sharedInstance.foregroundColorName {
             if let c = XTColorName.from(name: value) {
                 Logger.ui.debug("found preferences fg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
@@ -55,14 +55,14 @@ struct ColorConsole {
                 Color256.DEFAULT_BG = c
             }
         }
-
+        
         if let value = ProcessInfo.processInfo.environment["FGCOLOR"]  {
             if let c = XTColorName.from(name: value) {
                 Logger.ui.debug("found env fg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
                 Color256.DEFAULT_FG = c
             }
         }
-
+        
         if let value = ProcessInfo.processInfo.environment["BGCOLOR"]  {
             if let c = XTColorName.from(name: value) {
                 Logger.ui.debug("found env bg color for \(value, privacy: .public): \(String(describing:c), privacy: .public)")
@@ -86,11 +86,14 @@ struct ColorConsole {
         
         Logger.ui.debug("Effective foreground  \(String(describing: Color256.DEFAULT_FG), privacy: .public) ")
         Logger.ui.debug("Effective background  \(String(describing: Color256.DEFAULT_BG), privacy: .public) ")
-
-
+        
+        
     }
     
-
+    static func disablePrintColors() {
+        Color256.printReset()
+    }
+    
     /// Print these ansi codes to the console to turn on these colors.
     /// call `Color256.printReset()` to turn them off.
     /// You can then use ordinary print()
@@ -115,7 +118,7 @@ struct ColorConsole {
         
         // this sets the color. it's the ansi code.
         print("\(fgCode)")
-
+        
         
         var bgCode = Color256.backgroundCode(color: XTColorName.navyBlue)
         if let bg = bg {
@@ -128,18 +131,18 @@ struct ColorConsole {
         }
         print("\(bgCode)")
     }
-
-
+    
+    
     static func consoleMessage(_ message: String) {
         Color256.print(message, terminator: "\n")
     }
-
+    
     static func errorMessage(_ message: String) {
         Color256.print(message,
                        fg: .gold1,
                        bg: .red,
                        att: [.bold])
-
+        
         Color256.printStderr(message)
     }
 }
@@ -150,7 +153,7 @@ struct ColorConsole {
 extension XTColorName {
     
     static var nameDict = [String: XTColorName]()
-
+    
     public static func colorExists(name: String) -> Bool {
         
         if nameDict.isEmpty {
@@ -180,6 +183,6 @@ extension XTColorName {
             print("\(xn)")
         }
     }
-
+    
     
 }

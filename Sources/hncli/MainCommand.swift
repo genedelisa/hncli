@@ -33,10 +33,36 @@ struct MainCommand: AsyncParsableCommand {
     static var configuration = CommandConfiguration(
         commandName: "hncli ",
         abstract: "Hacker news frobs",
-        usage: "e.g. xcrun swift run hncli --display-brief --fetch-limit 5 --new",
+        usage: """
+        xcrun swift run hncli -h
+        xcrun swift run hncli --prolix-help
+        
+        xcrun swift run hncli --best
+        xcrun swift run hncli --new
+        xcrun swift run hncli --top
+        xcrun swift run hncli --ask
+        xcrun swift run hncli --job
+        xcrun swift run hncli --show
+        (unspecified defaults to --new)
+        
+        xcrun swift run hncli --enable-display-brief --fetch-limit 5 --new
+        xcrun swift run hncli --disable-display-brief --top
+        
+        xcrun swift run hncli --fetch-limit 5 --new --show-logging --verbose --display-json
+        
+        xcrun swift run hncli --default-fetch-limit 3
+        xcrun swift run hncli --default-display-brief false
+        
+        xcrun swift run hncli --color-names
+        xcrun swift run hncli --disable-display-brief -f navyBlue -b dodgerBlue2
+        xcrun swift run hncli --default-foreground navyBlue
+        xcrun swift run hncli --default-background dodgerBlue2
+        xcrun swift run hncli --background grey35 --foreground grey100
+        
+        """,
         version: "0.0.1"
     )
-
+    
     enum SearchType: String, EnumerableFlag, Codable {
         case best
         case new
@@ -45,77 +71,90 @@ struct MainCommand: AsyncParsableCommand {
         case job
         case show
     }
-
+    
     @Flag(exclusivity: .exclusive,
           help: ArgumentHelp(NSLocalizedString("Choose type of search.", comment: "")))
-    var searchType: SearchType
-
+    var searchType: SearchType = .new
+    // This will default to .new. If you want to force the user to specify one of the flags,
+    // do not specify a value here.
+    
     @Flag(name: .shortAndLong,
           help: ArgumentHelp(NSLocalizedString("Yakity yak.", comment: "")))
     var verbose = false
-
+    
     @Flag(
         help: ArgumentHelp(NSLocalizedString("Display the help document.", comment: ""),
                            discussion: "This will print the help file to stdout")
     )
     var prolixHelp = false
-
+    
     @Flag(
         help: ArgumentHelp(NSLocalizedString("Display the JSON response.", comment: ""),
                            discussion: "This will print the JSON returned from the server")
     )
     var displayJSON = false
-
-    @Flag(
-        help: ArgumentHelp(NSLocalizedString("Display the items briefly .", comment: ""),
-                           discussion: "This will print just the title and url of the item")
+    
+    @Flag(inversion: .prefixedEnableDisable,
+          help: ArgumentHelp(NSLocalizedString("Display the items briefly .", comment: ""),
+                             discussion: "This will print just the title and url of the item")
     )
-    var displayBrief = false
-
+    var displayBrief = Preferences.sharedInstance.brief
+    
     @Option(name: .long,
             help: ArgumentHelp(NSLocalizedString("Number of items to fetch.", comment: ""),
                                discussion: "This will fetch only this number of items regardless of the number of IDs"))
     var fetchLimit: Int = Preferences.sharedInstance.fetchLimit
-
-
+    
+    
     @Flag(help: ArgumentHelp(NSLocalizedString("Display the log entries for debugging.", comment: ""),
                              discussion: "Display the log entries for debugging.")
     )
     var showLogging = false
-
+    
     @Option(name: [.customShort("f"), .long],
             help: ArgumentHelp(NSLocalizedString("foreground color", comment: ""),
-                               discussion: "."))
+                               discussion: "Set the foreground color"))
     var foreground: String?
     
-
+    
     @Option(name: [.customShort("b"), .long],
             help: ArgumentHelp(NSLocalizedString("background color", comment: ""),
-                               discussion: "."))
+                               discussion: "Set the background color"))
     var background: String?
     
     @Flag(name: [.long],
-            help: ArgumentHelp(NSLocalizedString("print valid color names", comment: ""),
-                               discussion: "."))
+          help: ArgumentHelp(NSLocalizedString("print valid color names", comment: ""),
+                             discussion: "Display all valid color names then exit."))
     var colorNames = false
+    
+    // options for defaults
     
     @Option(name: [.long],
             help: ArgumentHelp(NSLocalizedString("default foreground color", comment: ""),
-                               discussion: "."))
+                               discussion: "Set and save the default value for the foreground color."))
     var defaultForeground: String?
     
     @Option(name: [.long],
             help: ArgumentHelp(NSLocalizedString("default background color", comment: ""),
-                               discussion: "."))
+                               discussion: "Set and save the default value for the background color."))
     var defaultBackground: String?
     
     @Option(name: [.long],
             help: ArgumentHelp(NSLocalizedString("default fetch limit", comment: ""),
-                               discussion: "."))
+                               discussion: "Set and save the default value for the fetch limit."))
     var defaultFetchLimit: Int?
-
-
-
+    
+    @Option(name: [.long],
+            help: ArgumentHelp(NSLocalizedString("default display is brief", comment: ""),
+                               discussion: "Set and save the default value for the display type. Brief is just the title and url."))
+    var defaultDisplayBrief: Bool?
+    
+    @Flag(name: [.long],
+            help: ArgumentHelp(NSLocalizedString("reset all stored preferences", comment: ""),
+                               discussion: "Remove all default values."))
+    var resetDefaults = false
+    
+    
     mutating func validate() throws {
         guard fetchLimit >= 1 else {
             throw ValidationError("Please specify a 'fetchLimit' of at least 1.")
@@ -171,8 +210,35 @@ struct MainCommand: AsyncParsableCommand {
     func message(_ message: String) {
         Color256.print(message, terminator: "\n")
     }
-
-
+    
+    func checkAndSetDefaults() {
+        
+        if resetDefaults {
+            Preferences.resetDefaults()
+            Preferences.sharedInstance.resetAll()
+            MainCommand.exit(withError: ExitCode.success)
+        }
+        
+        // if the flag is set on the command line, save it in preferences
+        
+        if let value = defaultForeground {
+            Preferences.sharedInstance.foregroundColorName = value
+        }
+        
+        if let value = defaultBackground {
+            Preferences.sharedInstance.backgroundColorName = value
+        }
+        
+        if let value = defaultFetchLimit {
+            Preferences.sharedInstance.fetchLimit = value
+        }
+        
+        if let value = defaultDisplayBrief {
+            Preferences.sharedInstance.brief = value
+        }
+    }
+    
+    
     func run() async throws {
         
         guard #available(macOS 12, *) else {
@@ -181,19 +247,11 @@ struct MainCommand: AsyncParsableCommand {
             return
         }
         
-        // setting the defaults?
-        if let value = defaultForeground {
-            Preferences.sharedInstance.foregroundColorName = value
-        }
-
-        if let value = defaultBackground {
-            Preferences.sharedInstance.backgroundColorName = value
-        }
-
-        if let value = defaultFetchLimit {
-            Preferences.sharedInstance.fetchLimit = value
+        if Preferences.sharedInstance.isFirstRun() {
+            
         }
         
+        checkAndSetDefaults()
         
         ColorConsole.setupColors(foreground: foreground, background: background)
         
@@ -204,17 +262,20 @@ struct MainCommand: AsyncParsableCommand {
         
         if prolixHelp {
             
+            Preferences.sharedInstance.printAllInSuite()
+            
             showHelp()
+            
             MainCommand.exit(withError: ExitCode.success)
             
             //throw CleanExit.message("End of help message")
             //throw CleanExit.helpRequest(ProlixHelpCommand)
         }
-
+        
         let api = HackerNewsAPIService()
         api.verbose = verbose
         api.displayJSON = displayJSON
-
+        
         let dateFormat: DateFormatter = {
             let dateFormat = DateFormatter()
             dateFormat.dateStyle = .medium
@@ -222,17 +283,17 @@ struct MainCommand: AsyncParsableCommand {
             dateFormat.timeZone = TimeZone.current
             return dateFormat
         }()
-
-
-
+        
+        
+        
         do {
             if verbose {
                 Logger.command.info("Fetchng items limited to \(self.fetchLimit, privacy: .public)")
                 print("🔭 Fetchng items limited to \(self.fetchLimit)")
             }
-
+            
             var stories: [Item] = []
-
+            
             switch searchType {
             case .best:
                 stories = try await api.fetchStories(kind: .beststories, fetchLimit: fetchLimit)
@@ -247,73 +308,73 @@ struct MainCommand: AsyncParsableCommand {
             case .show:
                 stories = try await api.fetchStories(kind: .showstories, fetchLimit: fetchLimit)
             }
-
-
+            
+            
             Color256.print("🔭 Fetching \(searchType.rawValue) items limited to \(fetchLimit)",
                            fg: .green1, bg: .darkBlue, att: [.italic])
             print()
-
+            
             Logger.command.info("search type: \(searchType.rawValue, privacy: .public)")
             Logger.command.info("story count: \(stories.count, privacy: .public)")
-
+            
             if verbose {
                 let msg = "☞ There are \(stories.count) stories"
                 ColorConsole.consoleMessage(msg)
             }
-
+            
             for story in stories {
                 if verbose {
                     Logger.command.info("\(story, privacy: .public)\n")
                 }
-
+                
                 if displayBrief {
                     if let s = story.title {
-                        Color256.print(s, fg: .green1, bg: .darkBlue, att: [.bold, .italic])
-                        // ColorConsole.consoleMessage(s)
+                        //Color256.print(s, fg: .green1, bg: .darkBlue, att: [.bold, .italic])
+                        ColorConsole.consoleMessage(s)
                     }
                     if let s = story.url {
-                        Color256.print(s, fg: .green, bg: .darkBlue, att: [.italic])
-                        // ColorConsole.consoleMessage(s)
+                        //Color256.print(s, fg: .green, bg: .darkBlue, att: [.italic])
+                        ColorConsole.consoleMessage(s)
                     }
                 } else {
                     if let s = story.type {
                         ColorConsole.consoleMessage("Item type: \(s)")
                     }
-
+                    
                     if let s = story.time {
                         let t = Date(timeIntervalSince1970: TimeInterval(s))
                         let ts = dateFormat.string(from: t)
                         // Color256.print(ts, fg: .green1, bg: .darkBlue, att: [.italic])
                         ColorConsole.consoleMessage(ts)
                     }
-
+                    
                     if let s = story.title {
                         // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
                         ColorConsole.consoleMessage(s)
                     }
-
+                    
                     if let s = story.by {
                         // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
                         ColorConsole.consoleMessage(s)
                     }
-
+                    
                     if let s = story.text {
                         ColorConsole.consoleMessage(s)
                     }
-
+                    
                     if let s = story.url {
                         // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
                         ColorConsole.consoleMessage(s)
                     }
                 }
-
+                
                 print()
             }
         } catch {
             Logger.command.error("\(#function) \(error.localizedDescription, privacy: .public)")
             ColorConsole.errorMessage(error.localizedDescription)
         }
-
+        
         if showLogging {
             
             let entries: [OSLogEntryLog] = Logger.findEntries(subsystem: OSLog.subsystem)

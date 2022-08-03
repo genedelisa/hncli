@@ -38,6 +38,9 @@ class Preferences {
     }
     
     // will be in ~/Library/Preferences/hncli.plist
+    // you can do this on the command line:
+    // defaults read hncli
+    // defaults read hncli foreground-color-name
     
     static let suiteName = "hncli"
     
@@ -50,6 +53,8 @@ class Preferences {
         self.userDefaults = defaults
         
         registerDefaults()
+        
+        numberOfRuns = numberOfRuns + 1
     }
     
     var numberOfRuns: Int {
@@ -129,7 +134,8 @@ class Preferences {
     // MARK: Default Values
     
     func registerDefaults() {
-        print("registering defaults")
+        //print("registering defaults")
+        
         userDefaults.register(defaults: [
             Keys.foregroundColorName.rawValue: "gold1",
             Keys.backgroundColorName.rawValue: "blue",
@@ -173,7 +179,7 @@ class Preferences {
     }
     
     func printPreferences() {
-        print("\(#function)")
+        //print("\(#function)")
         
         print("All preferences")
         let dict = userDefaults.dictionaryRepresentation()
@@ -183,8 +189,12 @@ class Preferences {
     }
     
     func printAllInSuite() {
-        print("\(#function)")
+        // print("\(#function)")
         
+        ColorConsole.enablePrintColors(fg: "gold1", bg: "navyBlue")
+        Color256.printBold()
+        print("Preferences")
+        Color256.printNoBold()
         print("suiteName: \(Self.suiteName)")
         
         if let dict = userDefaults.persistentDomain(forName: Self.suiteName) {
@@ -192,6 +202,11 @@ class Preferences {
                 print("\(k) : \(v)")
             }
         }
+        print("End of Preferences")
+        
+        print()
+        
+        ColorConsole.disablePrintColors()
     }
     
     func resetAll() {
@@ -202,10 +217,12 @@ class Preferences {
     
     static func resetDefaults() {
         if let bundleID = Bundle.main.bundleIdentifier {
+            print("removing defaults for \(bundleID)")
             UserDefaults.standard.removePersistentDomain(forName: bundleID)
             return
         }
         if let bundleID = Bundle.module.bundleIdentifier {
+            print("removing defauts for \(bundleID)")
             UserDefaults.standard.removePersistentDomain(forName: bundleID)
             return
         }
