@@ -223,17 +223,23 @@ struct MainCommand: AsyncParsableCommand {
         if resetDefaults {
             Preferences.resetDefaults()
             Preferences.sharedInstance.resetAll()
+            GDTerminalColorPreferences.resetDefaults()
+            GDTerminalColorPreferences.sharedInstance.resetAll()
+
             MainCommand.exit(withError: ExitCode.success)
         }
         
         // if the flag is set on the command line, save it in preferences
         
         if let value = defaultForeground {
-            Preferences.sharedInstance.foregroundColorName = value
+            //Preferences.sharedInstance.foregroundColorName = value
+            GDTerminalColorPreferences.sharedInstance.foregroundColorName = value
+
         }
         
         if let value = defaultBackground {
-            Preferences.sharedInstance.backgroundColorName = value
+            //Preferences.sharedInstance.backgroundColorName = value
+            GDTerminalColorPreferences.sharedInstance.backgroundColorName = value
         }
         
         if let value = defaultFetchLimit {
