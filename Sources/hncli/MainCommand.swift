@@ -29,6 +29,7 @@ import OSLog
 @available(macOS 10.15, *)
 @main
 struct MainCommand: AsyncParsableCommand {
+    static let version = "0.1.0"
     
     static var configuration = CommandConfiguration(
         commandName: "hncli ",
@@ -60,7 +61,7 @@ struct MainCommand: AsyncParsableCommand {
         xcrun swift run hncli --background grey35 --foreground grey100
         
         """,
-        version: "0.0.1"
+        version: version
     )
     
     enum SearchType: String, EnumerableFlag, Codable {
@@ -81,6 +82,12 @@ struct MainCommand: AsyncParsableCommand {
     @Flag(name: .shortAndLong,
           help: ArgumentHelp(NSLocalizedString("Yakity yak.", comment: "")))
     var verbose = false
+    
+    @Flag(
+        help: ArgumentHelp(NSLocalizedString("Display the current version.", comment: ""),
+                           discussion: "This will display the current version then exit")
+    )
+    var version = false
     
     @Flag(
         help: ArgumentHelp(NSLocalizedString("Display the help document.", comment: ""),
@@ -248,9 +255,13 @@ struct MainCommand: AsyncParsableCommand {
         }
         
         if Preferences.sharedInstance.isFirstRun() {
-            
+            Logger.command.debug("first run")
         }
         
+        if version {
+            print("version: \(Self.version)")
+            MainCommand.exit(withError: ExitCode.success)
+        }
         checkAndSetDefaults()
         
         ColorConsole.setupColors(foreground: foreground, background: background)

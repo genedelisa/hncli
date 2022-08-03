@@ -7,9 +7,10 @@
 SHELL 			= /bin/sh
 PROG                    = hncli
 SRC			= Sources/**/*.swift
-VERSION 		= 0.0.1
+VERSION 		= 0.1.1
 PREFIX 			= /usr/local
-INSTALL_DIR		= $(PREFIX)/bin/$(PROG)
+INSTALL_DIR		= $(PREFIX)/bin/
+INSTALLED_PROG		= $(INSTALL_DIR)/$(PROG)
 BUILD_PATH 		= .build/release/$(PROG)
 SWIFT			= xcrun --sdk macosx swift
 # you can see which swift with this:
@@ -70,14 +71,17 @@ test:						## run the tests
 
 
 .PHONY: install
-install: release				## install the program to INSTALL_PATH
+install: release				## install the program to INSTALL_DIR
 	install -d "$(PREFIX)/bin"
-	install -C -m 755 $(BUILD_PATH) $(INSTALL_PATH)
-	cp $(PREF_PLIST) $(PREF_DIR)
+	install -m 755 --directory $(PREF_DIR)
+	install -C -m 755 $(BUILD_PATH) $(INSTALL_DIR)
+	install -C -m 755 $(PREF_PLIST) $(PREF_DIR)
+
 
 .PHONY: uninstall
-uninstall:					## uninstall the program from INSTALL_PATH
-	rm -f $(INSTALL_PATH)
+uninstall:					## uninstall the program and logging config
+	rm -f $(INSTALLED_PROG)
+	rm -f $(PREF_DIR)$(PREF_PLIST)
 
 release: build-release				## build the release version
 debug: build-debug				## build the debug version
