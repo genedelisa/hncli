@@ -1,4 +1,4 @@
-# hncli
+# hncli Hacker news command line interface
 
 <!-- PROJECT SHIELDS -->
 <!--
@@ -51,19 +51,37 @@ https://github.com/HackerNews/API
 ## Usage
 
 ```shell
-xcrun swift run -- hncli
-xcrun swift run -- hncli  -h
-xcrun swift run -- hncli  --help
+xcrun swift run hncli -h
+xcrun swift run hncli --prolix-help
+        
+xcrun swift run hncli --best
+xcrun swift run hncli --new
+xcrun swift run hncli --top
+xcrun swift run hncli --ask
+xcrun swift run hncli --job
+xcrun swift run hncli --show
+(unspecified defaults to --new)
+        
+xcrun swift run hncli --brief
+xcrun swift run hncli --fully
+xcrun swift run hncli --prolix
+xcrun swift run hncli --default-item-display-type brief
+        
+xcrun swift run hncli --brief --fetch-limit 5 --new
+xcrun swift run hncli --prolix --top
+          
+xcrun swift run hncli --fetch-limit 5 --new --show-logging --verbose --display-json
+        
+xcrun swift run hncli --default-fetch-limit 3
 
-xcrun swift run hncli --display-brief --fetch-limit 5 --ask
-xcrun swift run hncli --display-brief --fetch-limit 5 --new
-xcrun swift run hncli --display-brief --fetch-limit 5 --top
-xcrun swift run hncli --display-brief --fetch-limit 5 --best
-xcrun swift run hncli --display-brief --fetch-limit 5 --job
-xcrun swift run hncli --display-brief --fetch-limit 5 --show
+xcrun swift run hncli --color-names
+xcrun swift run hncli --fully -f navyBlue -b dodgerBlue2
+xcrun swift run hncli --default-foreground navyBlue
+xcrun swift run hncli --default-background dodgerBlue2
+xcrun swift run hncli --background grey35 --foreground grey100
 
-xcrun swift run hncli --display-brief --fetch-limit 5 --new --show-logging --verbose --display-json  
-
+defaults read hncli
+defaults read hncli foreground-color-name
 
 ```
 
