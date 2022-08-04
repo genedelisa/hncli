@@ -76,12 +76,12 @@ class Preferences {
         }
     }
     
-    var itemDisplay: MainCommand.ItemDisplayType? {
+    var itemDisplay: ItemDisplayType? {
         set {
-            userDefaults.set(newValue, forKey: Keys.itemDisplay.rawValue)
+            userDefaults.set(newValue?.rawValue, forKey: Keys.itemDisplay.rawValue)
         }
         get {
-            userDefaults.object(forKey: Keys.itemDisplay.rawValue) as? MainCommand.ItemDisplayType
+            userDefaults.object(forKey: Keys.itemDisplay.rawValue) as? ItemDisplayType
         }
     }
     

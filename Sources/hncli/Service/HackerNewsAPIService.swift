@@ -235,6 +235,11 @@ public class HackerNewsAPIService {
                     print("\(underlying.localizedDescription)")
                     print("Underlying error: \n\(underlying)")
                 }
+                
+                if let s = String(data: data, encoding: .utf8) {
+                    Logger.service.debug("\(s, privacy: .public)")
+                    print("\(s)\n")
+                }
 
                 throw HackerNewsAPIError.decoding(reason: "")
             } catch let DecodingError.keyNotFound(key, context) {
@@ -248,17 +253,26 @@ public class HackerNewsAPIService {
                     print("\(underlying.localizedDescription)")
                     print("Underlying error: \n\(underlying)")
                 }
+                if let s = String(data: data, encoding: .utf8) {
+                    Logger.service.debug("\(s, privacy: .public)")
+                    print("\(s)\n")
+                }
                 throw HackerNewsAPIError.decoding(reason: "Key not found")
+                
             } catch let DecodingError.valueNotFound(value, context) {
-                print("Decoding Error. The value '\(value)' is not found.")
+                print("Decoding Error. The value '\(value)' is not found for item id \(id)")
                 print("Value '\(value)' not found:", context.debugDescription)
                 print("Coding Path:")
                 for path in context.codingPath {
                     print(" \(path)")
                 }
                 if let underlying = context.underlyingError {
-                    print("\(underlying.localizedDescription)")
+                    print("underlying \(underlying.localizedDescription)")
                     print("Underlying error: \n\(underlying)")
+                }
+                if let s = String(data: data, encoding: .utf8) {
+                    Logger.service.debug("\(s, privacy: .public)")
+                    print("\(s)\n")
                 }
                 throw HackerNewsAPIError.decoding(reason: "Value not found")
             } catch let DecodingError.typeMismatch(type, context) {
@@ -271,6 +285,10 @@ public class HackerNewsAPIService {
                 if let underlying = context.underlyingError {
                     print("\(underlying.localizedDescription)")
                     print("Underlying error: \n\(underlying)")
+                }
+                if let s = String(data: data, encoding: .utf8) {
+                    Logger.service.debug("\(s, privacy: .public)")
+                    print("\(s)\n")
                 }
                 throw HackerNewsAPIError.decoding(reason: "Type mismatch")
             } catch {

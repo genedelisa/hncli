@@ -36,13 +36,14 @@ extension MainCommand {
         static var configuration = CommandConfiguration(
             commandName: "Poll"
         )
-        
+        @OptionGroup() var commonOptions: Options
+
         @Option(name: [.customShort("i"), .long],
                 help: ArgumentHelp(NSLocalizedString("Interval", comment: ""),
                                    discussion: "Set the publish interval"))
         var interval: Double?
-        
-        
+
+
         func validate() throws {
             if let i = interval {
                 if i <= 0.0 {
@@ -51,7 +52,7 @@ extension MainCommand {
             }
         }
         
-        func makeRequest() async throws {
+        func makeRequest() async throws -> [Item] {
             // print("\(#function)")
             
             let api = HackerNewsAPIService()
@@ -61,46 +62,7 @@ extension MainCommand {
             
             let fetchLimit = 3
             let items = try await api.fetchItems(lower: maxID - fetchLimit, upper: maxID)
-            
-            let dateFormat: DateFormatter = {
-                let dateFormat = DateFormatter()
-                dateFormat.dateStyle = .medium
-                dateFormat.timeStyle = .medium
-                dateFormat.timeZone = TimeZone.current
-                return dateFormat
-            }()
-            
-            let ts = dateFormat.string(from: Date())
-            ColorConsole.consoleMessage("Now: \(ts)")
-            print()
-            
-            
-            for story in items {
-                if let s = story.time {
-                    let t = Date(timeIntervalSince1970: TimeInterval(s))
-                    let ts = dateFormat.string(from: t)
-                    ColorConsole.consoleMessage("\(ts)")
-                }
-                if let s = story.id {
-                    ColorConsole.consoleMessage("id: \(s)")
-                }
-                
-                if let s = story.type {
-                    ColorConsole.consoleMessage(s)
-                }
-                
-                if let s = story.title {
-                    ColorConsole.consoleMessage(s)
-                }
-                
-                if let s = story.text {
-                    ColorConsole.consoleMessage(s)
-                }
-                if let s = story.url {
-                    ColorConsole.consoleMessage(s)
-                }
-                print()
-            }
+            return items
             
         }
         
@@ -111,16 +73,37 @@ extension MainCommand {
                 every = i
             }
             
+            ItemDisplay.setupColors(foreground: self.commonOptions.foreground, background: self.commonOptions.background)
+//            ColorConsole.setupColors(foreground: commonOptions.foreground, background: commonOptions.background)
+            
+            ItemDisplay.sharedInstance.itemDisplayType = self.commonOptions.itemDisplayType
+
+            
             let subscription = Timer
                 .publish(every: every, on: .current, in: .default)
                 .autoconnect()
                 .sink { date in
+                    
                     //let dateFormatter = ISO8601DateFormatter()
-                    //print("\(dateFormatter.string(from: date))")
+                    let dateFormatter: DateFormatter = {
+                        let dateFormat = DateFormatter()
+                        dateFormat.dateStyle = .medium
+                        dateFormat.timeStyle = .medium
+                        dateFormat.timeZone = TimeZone.current
+                        return dateFormat
+                    }()
+                    let ts = dateFormatter.string(from: date)
+                    ItemDisplay.sharedInstance.clearScreen()
+                    ColorConsole.consoleMessage("Now: \(ts)\n")
                     
                     Task {
                         do {
-                            try await self.makeRequest()
+                            let items = try await self.makeRequest()
+                            for item in items {
+                                ItemDisplay.sharedInstance.display(item: item)
+                                print()
+                            }
+                            
                         } catch {
                             print(error.localizedDescription)
                         }

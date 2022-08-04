@@ -23,7 +23,7 @@ let package = Package(
 
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.1.2"),
-        .package(url: "https://github.com/genedelisa/GDTerminalColor.git", from: "0.1.16"),
+        .package(url: "https://github.com/genedelisa/GDTerminalColor.git", from: "0.1.21"),
         //.package(url: "https://github.com/genedelisa/GDTerminalColor.git", from: "0.1.12"),
 
     ],
