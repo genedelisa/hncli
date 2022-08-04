@@ -30,6 +30,17 @@ import os.log
 struct HackerNewsEndpooint {
     public static let endpoint = "https://hacker-news.firebaseio.com/v0"
     
+    
+//Example: https://hacker-news.firebaseio.com/v0/maxitem.json?print=pretty
+    
+    static func buildIMaxtemRequest() throws -> URLRequest {
+        guard let requestUrl = URL(string: "\(endpoint)/maxitem.json") else {
+            throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")
+        }
+        Logger.service.debug("max GET request url: \(requestUrl, privacy: .public)")
+        return buildGETURLRequest(requestUrl: requestUrl)
+    }
+    
     static func buildItemRequest(kind: ItemKind) throws -> URLRequest {
         guard let requestUrl = URL(string: "\(endpoint)/\(kind.rawValue).json") else {
             throw HackerNewsAPIError.invalidURL(reason: "Could not create request url")

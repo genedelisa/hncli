@@ -26,6 +26,12 @@ import GDTerminalColor
 import os.log
 import OSLog
 
+extension MainCommand.ItemDisplayType: ExpressibleByArgument {
+    init?(argument: String) {
+        self.init(rawValue: argument)
+    }
+}
+
 @available(macOS 10.15, *)
 @main
 struct MainCommand: AsyncParsableCommand {
@@ -61,7 +67,9 @@ struct MainCommand: AsyncParsableCommand {
         xcrun swift run hncli --background grey35 --foreground grey100
         
         """,
-        version: version
+        version: version,
+        subcommands: [TimerPublishCommand.self]
+        
     )
     
     enum SearchType: String, EnumerableFlag, Codable {
@@ -72,12 +80,31 @@ struct MainCommand: AsyncParsableCommand {
         case job
         case show
     }
+
+    enum ItemDisplayType: String, EnumerableFlag, Codable {
+        case brief
+        case fully
+        case prolix
+    }
+    
+
     
     @Flag(exclusivity: .exclusive,
           help: ArgumentHelp(NSLocalizedString("Choose type of search.", comment: "")))
     var searchType: SearchType = .new
     // This will default to .new. If you want to force the user to specify one of the flags,
     // do not specify a value here.
+    
+    @Flag(exclusivity: .exclusive,
+          help: ArgumentHelp(NSLocalizedString("Choose how the item is displayed.", comment: ""),
+                             discussion: "Choose how the item is displayed"))
+    var itemDisplayType: ItemDisplayType =  (Preferences.sharedInstance.itemDisplay ?? .brief)
+    
+    @Option(
+            help: ArgumentHelp(NSLocalizedString("default display of items", comment: ""),
+                               discussion: "Set and save the default value for the display type."))
+    var defaultItemDisplayType: ItemDisplayType?
+
     
     @Flag(name: .shortAndLong,
           help: ArgumentHelp(NSLocalizedString("Yakity yak.", comment: "")))
@@ -101,16 +128,21 @@ struct MainCommand: AsyncParsableCommand {
     )
     var displayJSON = false
     
-    @Flag(inversion: .prefixedEnableDisable,
-          help: ArgumentHelp(NSLocalizedString("Display the items briefly .", comment: ""),
-                             discussion: "This will print just the title and url of the item")
-    )
-    var displayBrief = Preferences.sharedInstance.brief
+//    @Flag(inversion: .prefixedEnableDisable,
+//          help: ArgumentHelp(NSLocalizedString("Display the items briefly .", comment: ""),
+//                             discussion: "This will print just the title and url of the item")
+//    )
+//    var displayBrief = Preferences.sharedInstance.brief
     
     @Option(name: .long,
             help: ArgumentHelp(NSLocalizedString("Number of items to fetch.", comment: ""),
                                discussion: "This will fetch only this number of items regardless of the number of IDs"))
     var fetchLimit: Int = Preferences.sharedInstance.fetchLimit
+    
+    @Option(name: .long,
+            help: ArgumentHelp(NSLocalizedString("Fetch specified ID.", comment: ""),
+                               discussion: "This will fetch only this ID"))
+    var fetchID: Int?
     
     
     @Flag(help: ArgumentHelp(NSLocalizedString("Display the log entries for debugging.", comment: ""),
@@ -151,14 +183,15 @@ struct MainCommand: AsyncParsableCommand {
                                discussion: "Set and save the default value for the fetch limit."))
     var defaultFetchLimit: Int?
     
-    @Option(name: [.long],
-            help: ArgumentHelp(NSLocalizedString("default display is brief", comment: ""),
-                               discussion: "Set and save the default value for the display type. Brief is just the title and url."))
-    var defaultDisplayBrief: Bool?
+//    @Option(name: [.long],
+//            help: ArgumentHelp(NSLocalizedString("default display is brief", comment: ""),
+//                               discussion: "Set and save the default value for the display type. Brief is just the title and url."))
+//    var defaultDisplayBrief: Bool?
+    
     
     @Flag(name: [.long],
-            help: ArgumentHelp(NSLocalizedString("reset all stored preferences", comment: ""),
-                               discussion: "Remove all default values."))
+          help: ArgumentHelp(NSLocalizedString("reset all stored preferences", comment: ""),
+                             discussion: "Remove all default values."))
     var resetDefaults = false
     
     
@@ -225,7 +258,7 @@ struct MainCommand: AsyncParsableCommand {
             Preferences.sharedInstance.resetAll()
             GDTerminalColorPreferences.resetDefaults()
             GDTerminalColorPreferences.sharedInstance.resetAll()
-
+            
             MainCommand.exit(withError: ExitCode.success)
         }
         
@@ -234,7 +267,7 @@ struct MainCommand: AsyncParsableCommand {
         if let value = defaultForeground {
             //Preferences.sharedInstance.foregroundColorName = value
             GDTerminalColorPreferences.sharedInstance.foregroundColorName = value
-
+            
         }
         
         if let value = defaultBackground {
@@ -246,11 +279,169 @@ struct MainCommand: AsyncParsableCommand {
             Preferences.sharedInstance.fetchLimit = value
         }
         
-        if let value = defaultDisplayBrief {
-            Preferences.sharedInstance.brief = value
+//        if let value = defaultDisplayBrief {
+//            Preferences.sharedInstance.brief = value
+//        }
+        
+        if let value = defaultItemDisplayType {
+            Preferences.sharedInstance.itemDisplay = value
+        }
+
+    }
+
+    func display(item: Item) {
+        switch(itemDisplayType) {
+        case .brief:
+            displayItemBriefly(item: item)
+        case .fully:
+            displayItemFully(item: item)
+        case .prolix:
+            displayItemProlix(item: item)
         }
     }
     
+    func displayItemBriefly(item: Item) {
+        if item.type == "comment" {
+            if let s = item.id {
+                ColorConsole.consoleMessage("ID: \(s)")
+            }
+            if let s = item.parent {
+                ColorConsole.consoleMessage("Parent: \(s)")
+            }
+            if let s = item.by {
+                ColorConsole.consoleMessage("By: \(s)")
+            }
+            if let s = item.text {
+                ColorConsole.consoleMessage("Text: \(s)")
+            }
+            return
+        }
+        
+        if let s = item.title {
+            //Color256.print(s, fg: .green1, bg: .darkBlue, att: [.bold, .italic])
+            ColorConsole.consoleMessage("\(s)")
+        }
+        if let s = item.url {
+            //Color256.print(s, fg: .green, bg: .darkBlue, att: [.italic])
+            ColorConsole.consoleMessage("\(s)")
+        }
+    }
+    
+    func displayItemFully(item: Item) {
+        let dateFormat: DateFormatter = {
+            let dateFormat = DateFormatter()
+            dateFormat.dateStyle = .medium
+            dateFormat.timeStyle = .medium
+            dateFormat.timeZone = TimeZone.current
+            return dateFormat
+        }()
+        
+        if let s = item.time {
+            let t = Date(timeIntervalSince1970: TimeInterval(s))
+            let ts = dateFormat.string(from: t)
+            // Color256.print(ts, fg: .green1, bg: .darkBlue, att: [.italic])
+            ColorConsole.consoleMessage(ts)
+        }
+        
+        if let s = item.id {
+            ColorConsole.consoleMessage("ID: \(s)")
+        }
+        
+        if let s = item.type {
+            ColorConsole.consoleMessage("Type: \(s)")
+        }
+        
+        if let s = item.title {
+            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+            ColorConsole.consoleMessage(s)
+        }
+        
+        if let s = item.by {
+            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+            ColorConsole.consoleMessage(s)
+        }
+        
+        if let s = item.text {
+            ColorConsole.consoleMessage(s)
+        }
+        
+        if let s = item.url {
+            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+            ColorConsole.consoleMessage(s)
+        }
+    }
+    
+    func displayItemProlix(item: Item) {
+        let dateFormat: DateFormatter = {
+            let dateFormat = DateFormatter()
+            dateFormat.dateStyle = .medium
+            dateFormat.timeStyle = .medium
+            dateFormat.timeZone = TimeZone.current
+            return dateFormat
+        }()
+        
+        if let s = item.time {
+            let t = Date(timeIntervalSince1970: TimeInterval(s))
+            let ts = dateFormat.string(from: t)
+            // Color256.print(ts, fg: .green1, bg: .darkBlue, att: [.italic])
+            ColorConsole.consoleMessage(ts)
+        }
+        
+        if let s = item.id {
+            ColorConsole.consoleMessage("ID: \(s)")
+        }
+        if let s = item.parent {
+            ColorConsole.consoleMessage("Parent: \(s)")
+        }
+        
+        if let s = item.type {
+            ColorConsole.consoleMessage("Type: \(s)")
+        }
+        
+        if let s = item.title {
+            // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
+            ColorConsole.consoleMessage("title: \(s)")
+        }
+        
+        if let s = item.by {
+            ColorConsole.consoleMessage("by: \(s)")
+        }
+
+        if let s = item.descendants {
+            ColorConsole.consoleMessage("descendants: \(s)")
+        }
+        
+        if let s = item.kids {
+            ColorConsole.consoleMessage("kids: \(s)")
+        }
+        
+        if let s = item.score {
+            ColorConsole.consoleMessage("score: \(s)")
+        }
+
+        if let s = item.deleted {
+            ColorConsole.consoleMessage("deleted: \(s)")
+        }
+
+        if let s = item.dead {
+            ColorConsole.consoleMessage("dead: \(s)")
+        }
+        
+        if let s = item.poll {
+            ColorConsole.consoleMessage("poll: \(s)")
+        }
+        if let s = item.parts {
+            ColorConsole.consoleMessage("parts: \(s)")
+        }
+        
+        if let s = item.text {
+            ColorConsole.consoleMessage("Text: \(s)")
+        }
+        
+        if let s = item.url {
+            ColorConsole.consoleMessage(s)
+        }
+    }
     
     func run() async throws {
         
@@ -293,20 +484,21 @@ struct MainCommand: AsyncParsableCommand {
         api.verbose = verbose
         api.displayJSON = displayJSON
         
-        let dateFormat: DateFormatter = {
-            let dateFormat = DateFormatter()
-            dateFormat.dateStyle = .medium
-            dateFormat.timeStyle = .medium
-            dateFormat.timeZone = TimeZone.current
-            return dateFormat
-        }()
-        
-        
-        
         do {
+            if let id = fetchID {
+                if verbose {
+                    Logger.command.info("Fetching item with id \(id, privacy: .public)")
+                    print("🔭 Fetching item with id \(id)")
+                }
+
+                let item = try await api.fetchItem(id: id)
+                display(item: item)
+                MainCommand.exit(withError: ExitCode.success)
+            }
+            
             if verbose {
-                Logger.command.info("Fetchng items limited to \(self.fetchLimit, privacy: .public)")
-                print("🔭 Fetchng items limited to \(self.fetchLimit)")
+                Logger.command.info("Fetching items limited to \(self.fetchLimit, privacy: .public)")
+                print("🔭 Fetching items limited to \(self.fetchLimit)")
             }
             
             var stories: [Item] = []
@@ -343,48 +535,7 @@ struct MainCommand: AsyncParsableCommand {
                 if verbose {
                     Logger.command.info("\(story, privacy: .public)\n")
                 }
-                
-                if displayBrief {
-                    if let s = story.title {
-                        //Color256.print(s, fg: .green1, bg: .darkBlue, att: [.bold, .italic])
-                        ColorConsole.consoleMessage(s)
-                    }
-                    if let s = story.url {
-                        //Color256.print(s, fg: .green, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(s)
-                    }
-                } else {
-                    if let s = story.type {
-                        ColorConsole.consoleMessage("Item type: \(s)")
-                    }
-                    
-                    if let s = story.time {
-                        let t = Date(timeIntervalSince1970: TimeInterval(s))
-                        let ts = dateFormat.string(from: t)
-                        // Color256.print(ts, fg: .green1, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(ts)
-                    }
-                    
-                    if let s = story.title {
-                        // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(s)
-                    }
-                    
-                    if let s = story.by {
-                        // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(s)
-                    }
-                    
-                    if let s = story.text {
-                        ColorConsole.consoleMessage(s)
-                    }
-                    
-                    if let s = story.url {
-                        // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-                        ColorConsole.consoleMessage(s)
-                    }
-                }
-                
+                display(item: story)
                 print()
             }
         } catch {
@@ -405,5 +556,8 @@ struct MainCommand: AsyncParsableCommand {
                 print("\(entry)")
             }
         }
+        
     }
+    
+    
 }

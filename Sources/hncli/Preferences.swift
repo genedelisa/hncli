@@ -35,6 +35,7 @@ class Preferences {
         case fetchLimit = "fetch-limit"
         case verbose
         case brief
+        case itemDisplay = "item-display"
     }
     
     // will be in ~/Library/Preferences/hncli.plist
@@ -72,6 +73,15 @@ class Preferences {
         }
         get {
             userDefaults.integer(forKey: Keys.fetchLimit.rawValue)
+        }
+    }
+    
+    var itemDisplay: MainCommand.ItemDisplayType? {
+        set {
+            userDefaults.set(newValue, forKey: Keys.itemDisplay.rawValue)
+        }
+        get {
+            userDefaults.object(forKey: Keys.itemDisplay.rawValue) as? MainCommand.ItemDisplayType
         }
     }
     
