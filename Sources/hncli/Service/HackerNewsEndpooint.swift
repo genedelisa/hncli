@@ -67,7 +67,7 @@ struct HackerNewsEndpooint {
     }
 
 
-    static func buildUserGETURLRequest(id: Int) throws -> URLRequest {
+    static func buildUserGETURLRequest(id: String) throws -> URLRequest {
         Logger.service.trace("\(#function)")
 
         var uc = URLComponents()

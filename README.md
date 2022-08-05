@@ -80,6 +80,8 @@ xcrun swift run hncli --default-foreground navyBlue
 xcrun swift run hncli --default-background dodgerBlue2
 xcrun swift run hncli --background grey35 --foreground grey100
 
+xcrun swift run hncli Poll
+
 defaults read hncli
 defaults read hncli foreground-color-name
 

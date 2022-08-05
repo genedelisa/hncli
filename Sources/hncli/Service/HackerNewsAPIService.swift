@@ -300,6 +300,112 @@ public class HackerNewsAPIService {
             throw HackerNewsAPIError.invalidResponse(reason: "Fetching item: \(error.localizedDescription)")
         }
     }
+    
+    
+    func fetchUser(id: String) async throws -> User {
+        logger.trace("\(#function)")
+
+        let urlRequest = try HackerNewsEndpooint.buildUserGETURLRequest(id: id)  
+
+        Logger.service.debug("\(urlRequest, privacy: .public)")
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: urlRequest)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                throw HackerNewsAPIError.invalidResponse(reason: "Invalid Response; not an HTTP Response")
+            }
+
+            if httpResponse.statusCode != 200 {
+                throw HackerNewsAPIError.httpStatusCode(reason: "Non successful HTTP Response",
+                                                        status: httpResponse.statusCode)
+            }
+
+            if displayJSON, let s = String(data: data, encoding: .utf8) {
+                Logger.service.debug("\(s, privacy: .public)")
+                print("\(s)\n")
+            }
+
+            do {
+                let decoder = newJSONDecoder()
+                return try decoder.decode(User.self, from: data)
+            } catch let DecodingError.dataCorrupted(context) {
+                print("Decoding Error. The data is corrupted.")
+                print("\(context.debugDescription)")
+                print("Coding Path:")
+                for path in context.codingPath {
+                    print(" \(path)")
+                }
+                if let underlying = context.underlyingError {
+                    print("\(underlying.localizedDescription)")
+                    print("Underlying error: \n\(underlying)")
+                }
+                
+                if let s = String(data: data, encoding: .utf8) {
+                    Logger.service.debug("\(s, privacy: .public)")
+                    print("\(s)\n")
+                }
+
+                throw HackerNewsAPIError.decoding(reason: "")
+            } catch let DecodingError.keyNotFound(key, context) {
+                print("Decoding Error. The key '\(key)' is not found.")
+                print(context.debugDescription)
+                print("Coding Path:")
+                for path in context.codingPath {
+                    print(" \(path)")
+                }
+                if let underlying = context.underlyingError {
+                    print("\(underlying.localizedDescription)")
+                    print("Underlying error: \n\(underlying)")
+                }
+                if let s = String(data: data, encoding: .utf8) {
+                    Logger.service.debug("\(s, privacy: .public)")
+                    print("\(s)\n")
+                }
+                throw HackerNewsAPIError.decoding(reason: "Key not found")
+                
+            } catch let DecodingError.valueNotFound(value, context) {
+                print("Decoding Error. The value '\(value)' is not found for item id \(id)")
+                print("Value '\(value)' not found:", context.debugDescription)
+                print("Coding Path:")
+                for path in context.codingPath {
+                    print(" \(path)")
+                }
+                if let underlying = context.underlyingError {
+                    print("underlying \(underlying.localizedDescription)")
+                    print("Underlying error: \n\(underlying)")
+                }
+                if let s = String(data: data, encoding: .utf8) {
+                    Logger.service.debug("\(s, privacy: .public)")
+                    print("\(s)\n")
+                }
+                throw HackerNewsAPIError.decoding(reason: "Value not found")
+            } catch let DecodingError.typeMismatch(type, context) {
+                print("Decoding Error. The type '\(type)' mismatch.")
+                print("Type '\(type)' mismatch:", context.debugDescription)
+                print("Coding Path:")
+                for path in context.codingPath {
+                    print(" \(path)")
+                }
+                if let underlying = context.underlyingError {
+                    print("\(underlying.localizedDescription)")
+                    print("Underlying error: \n\(underlying)")
+                }
+                if let s = String(data: data, encoding: .utf8) {
+                    Logger.service.debug("\(s, privacy: .public)")
+                    print("\(s)\n")
+                }
+                throw HackerNewsAPIError.decoding(reason: "Type mismatch")
+            } catch {
+                logger.error("Error: \(error.localizedDescription, privacy: .public)")
+                throw HackerNewsAPIError.decoding(reason: "Could not decode response: \(error.localizedDescription)")
+            }
+        } catch {
+            Logger.service.error("Error: \(error.localizedDescription, privacy: .public)")
+            throw HackerNewsAPIError.invalidResponse(reason: "Fetching item: \(error.localizedDescription)")
+        }
+    }
+
 
 }
 

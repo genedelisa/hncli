@@ -35,7 +35,7 @@ import OSLog
 @available(macOS 10.15, *)
 @main
 struct MainCommand: AsyncParsableCommand {
-    static let version = "0.1.0"
+    static let version = "0.1.10"
     
     static var configuration = CommandConfiguration(
         commandName: "hncli ",
@@ -70,6 +70,7 @@ struct MainCommand: AsyncParsableCommand {
         xcrun swift run hncli --default-background dodgerBlue2
         xcrun swift run hncli --background grey35 --foreground grey100
         
+        xcrun swift run hncli Poll
         """,
         version: version,
         subcommands: [TimerPublishCommand.self]
@@ -151,6 +152,12 @@ struct MainCommand: AsyncParsableCommand {
                                discussion: "This will fetch only this ID"))
     var fetchID: Int?
     
+    @Option(name: .long,
+            help: ArgumentHelp(NSLocalizedString("Fetch user with the specified ID.", comment: ""),
+                               discussion: "This will fetch the user with this ID"))
+    var fetchUser: String?
+
+    
     
     @Flag(help: ArgumentHelp(NSLocalizedString("Display the log entries for debugging.", comment: ""),
                              discussion: "Display the log entries for debugging.")
@@ -223,7 +230,16 @@ struct MainCommand: AsyncParsableCommand {
             do {
                 let data = try Data(contentsOf: helpURL)
                 if let s = String(data: data, encoding: .utf8) {
+
+                    ColorConsole.enablePrintColors()
+
+//                    ColorConsole.enablePrintColors(fg: GDTerminalColorPreferences.sharedInstance.foregroundColorName,
+//                                                   bg: GDTerminalColorPreferences.sharedInstance.backgroundColorName)
+
                     print(s)
+                    
+                    ColorConsole.disablePrintColors()
+                    
                 }
             } catch {
                 print(error.localizedDescription)
@@ -305,6 +321,7 @@ struct MainCommand: AsyncParsableCommand {
         
         if prolixHelp {
             
+            ItemDisplay.sharedInstance.clearScreen()
             Preferences.sharedInstance.printAllInSuite()
             
             showHelp()
@@ -321,6 +338,18 @@ struct MainCommand: AsyncParsableCommand {
 
         
         do {
+            
+            if let id = fetchUser {
+                if verbose {
+                    Logger.command.info("Fetching user with id \(id, privacy: .public)")
+                    print("🔭 Fetching user with id \(id)")
+                }
+
+                let user = try await api.fetchUser(id: id)
+                ItemDisplay.sharedInstance.display(user: user)
+                MainCommand.exit(withError: ExitCode.success)
+            }
+            
             if let id = fetchID {
                 if verbose {
                     Logger.command.info("Fetching item with id \(id, privacy: .public)")

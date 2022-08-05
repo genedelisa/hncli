@@ -63,6 +63,34 @@ struct ItemDisplay {
         Color256.clearScreen()
     }
     
+//    id    The user's unique username. Case-sensitive. Required.
+//    created    Creation date of the user, in Unix Time.
+//    karma    The user's karma.
+//    about    The user's optional self-description. HTML.
+//    submitted    List of the user's stories, polls and comments.
+
+    func display(user: User) {
+        if let s = user.id {
+            ColorConsole.consoleMessage("ID: \(s)")
+        }
+        if let s = user.about {
+            ColorConsole.consoleMessage("About: \(s)")
+        }
+        if let s = user.created {
+            let t = Date(timeIntervalSince1970: TimeInterval(s))
+            let ts = dateFormat.string(from: t)
+            ColorConsole.consoleMessage("Created: \(ts)")
+//            ColorConsole.consoleMessage(ts, fg: .green1, bg: .darkBlue, att: [.italic])
+        }
+        if let s = user.karma {
+            ColorConsole.consoleMessage("Karma: \(s)")
+        }
+        if let s = user.submitted {
+            ColorConsole.consoleMessage("Submitted: \(s)")
+        }
+
+    }
+    
     func display(item: Item) {
 
         switch(itemDisplayType) {
@@ -117,8 +145,8 @@ struct ItemDisplay {
         if let s = item.time {
             let t = Date(timeIntervalSince1970: TimeInterval(s))
             let ts = dateFormat.string(from: t)
-            // Color256.print(ts, fg: .green1, bg: .darkBlue, att: [.italic])
-            ColorConsole.consoleMessage(ts)
+            ColorConsole.consoleMessage(ts, fg: .green1, bg: .darkBlue, att: [.italic])
+            //ColorConsole.consoleMessage(ts)
         }
         
         if let s = item.id {
