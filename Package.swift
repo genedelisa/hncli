@@ -23,7 +23,7 @@ let package = Package(
 
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.1.2"),
-        .package(url: "https://github.com/genedelisa/GDTerminalColor.git", from: "0.1.21"),
+        .package(url: "https://github.com/genedelisa/GDTerminalColor.git", from: "0.1.29"),
         //.package(url: "https://github.com/genedelisa/GDTerminalColor.git", from: "0.1.12"),
 
     ],
@@ -38,6 +38,7 @@ let package = Package(
             ],
             resources: [
                 .process("Resources/help.txt"),
+                .process("Resources/colorPalette.json")
             ],
 
             swiftSettings: [

@@ -59,16 +59,21 @@ struct MainCommand: AsyncParsableCommand {
         
         xcrun swift run hncli --brief --fetch-limit 5 --new
         xcrun swift run hncli --prolix --top
-          
+
+        xcrun swift run hncli --fetch-id 123456 --prolix
+        
         xcrun swift run hncli --fetch-limit 5 --new --show-logging --verbose --display-json
         
         xcrun swift run hncli --default-fetch-limit 3
+        
 
         xcrun swift run hncli --color-names
         xcrun swift run hncli --fully -f navyBlue -b dodgerBlue2
         xcrun swift run hncli --default-foreground navyBlue
         xcrun swift run hncli --default-background dodgerBlue2
         xcrun swift run hncli --background grey35 --foreground grey100
+
+        xcrun swift run hncli --background-hex "#696969" --foreground-hex "#DCDCDC"
         
         xcrun swift run hncli Poll
         """,
@@ -98,11 +103,32 @@ struct MainCommand: AsyncParsableCommand {
                                    discussion: "Set the foreground color"))
         var foreground: String?
         
-        
         @Option(name: [.customShort("b"), .long],
                 help: ArgumentHelp(NSLocalizedString("background color", comment: ""),
                                    discussion: "Set the background color"))
         var background: String?
+        
+        @Option(name: [.long],
+                help: ArgumentHelp(NSLocalizedString("foreground color", comment: ""),
+                                   discussion: "Set the foreground rgb hex color"))
+        var foregroundHex: String?
+        
+        
+        @Option(name: [.long],
+                help: ArgumentHelp(NSLocalizedString("background color", comment: ""),
+                                   discussion: "Set the background rgb hex color"))
+        var backgroundHex: String?
+        
+        @Option(name: [.long],
+                help: ArgumentHelp(NSLocalizedString("foreground color", comment: ""),
+                                   discussion: "Set the foreground to a css color name"))
+        var foregroundCss: String?
+        
+        
+        @Option(name: [.long],
+                help: ArgumentHelp(NSLocalizedString("background color", comment: ""),
+                                   discussion: "Set the background to a css color name"))
+        var backgroundCss: String?
 
     }
     @OptionGroup() var commonOptions: Options
@@ -181,6 +207,16 @@ struct MainCommand: AsyncParsableCommand {
             help: ArgumentHelp(NSLocalizedString("default background color", comment: ""),
                                discussion: "Set and save the default value for the background color."))
     var defaultBackground: String?
+    
+    @Option(name: [.long],
+            help: ArgumentHelp(NSLocalizedString("default foreground color in hex", comment: ""),
+                               discussion: "Set and save the default rgb hex value for the foreground color."))
+    var defaultForegroundHex: String?
+    
+    @Option(name: [.long],
+            help: ArgumentHelp(NSLocalizedString("default background color in hex", comment: ""),
+                               discussion: "Set and save the default rgb hex value for the background color."))
+    var defaultBackgroundHex: String?
     
     @Option(name: [.long],
             help: ArgumentHelp(NSLocalizedString("default fetch limit", comment: ""),
@@ -281,6 +317,14 @@ struct MainCommand: AsyncParsableCommand {
             ColorConsole.setDefaultBackgroundColor(name: value)
         }
         
+        if let value = defaultForegroundHex {
+            ColorConsole.setDefaultForegroundColor(hex: value)
+        }
+        
+        if let value = defaultBackgroundHex {
+            ColorConsole.setDefaultBackgroundColor(hex: value)
+        }
+        
         if let value = defaultFetchLimit {
             Preferences.sharedInstance.fetchLimit = value
         }
@@ -310,8 +354,22 @@ struct MainCommand: AsyncParsableCommand {
         }
         checkAndSetDefaults()
         
-//        ColorConsole.setupColors(foreground: commonOptions.foreground, background: commonOptions.background)
-        ItemDisplay.setupColors(foreground: self.commonOptions.foreground, background: self.commonOptions.background)
+        ItemDisplay.setupHexColors(foreground: self.commonOptions.foregroundHex,
+                                   background: self.commonOptions.backgroundHex)
+        
+        ItemDisplay.setupCssColors(foreground: self.commonOptions.foregroundCss,
+                                   background: self.commonOptions.backgroundCss)
+
+        ItemDisplay.setupColors(foreground: self.commonOptions.foreground,
+                                background: self.commonOptions.background)
+
+        ItemDisplay.useHex = (self.commonOptions.foregroundHex != nil ||
+                              self.commonOptions.backgroundHex != nil)
+
+        ItemDisplay.useCss = (self.commonOptions.foregroundCss != nil ||
+                              self.commonOptions.backgroundCss != nil)
+
+        
         ItemDisplay.sharedInstance.itemDisplayType = self.commonOptions.itemDisplayType
 
         if colorNames {

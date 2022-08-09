@@ -55,12 +55,59 @@ struct ItemDisplay {
         return dateFormat
     }()
     
+    static var useHex = false
+    static var useCss = false
+    
     static func setupColors(foreground: String? = nil, background: String? = nil) {
         ColorConsole.setupColors(foreground: foreground, background: background)
     }
 
+    static func setupHexColors(foreground: String? = nil, background: String? = nil) {
+        ColorConsole.setupHexColors(foreground: foreground, background: background)
+    }
+    static func setupCssColors(foreground: String? = nil, background: String? = nil) {
+        ColorConsole.setupCssColors(foreground: foreground, background: background)
+    }
+
     func clearScreen() {
         Color256.clearScreen()
+    }
+    
+    // TODO: these are awful clean them up
+    
+    func message(_ s: String,
+                 fg: XTColorName? = nil,
+                 bg: XTColorName? = nil,
+                 att: Attributes? = nil,
+                 bgatt: Attributes? = nil,
+                 fgHex: String? = nil,
+                 bgHex: String? = nil,
+                 terminator: String = "\n") {
+        
+        if Self.useHex {
+           // print("printing hex")
+            ColorConsole.consoleMessageHex("\(s)",
+                                           fgHex: fgHex == nil ? Color24.DEFAULT_FG : fgHex!,
+                                           bgHex: bgHex == nil ? Color24.DEFAULT_BG : bgHex!,
+                                           terminator: terminator)
+//            ColorConsole.consoleMessageHex("\(s)",
+//                                           fgHex: fgHex,
+//                                           bgHex: bgHex,
+//                                           terminator: terminator)
+        } else if Self.useCss {
+//            print("printing css")
+
+            Color24.print(s)
+                                           
+        } else {
+           // print("printing neither hex nor css")
+            ColorConsole.consoleMessage("\(s)",
+                                        fg: fg == nil ? Color256.DEFAULT_FG : fg!,
+                                        bg: bg == nil ? Color256.DEFAULT_BG : bg!,
+                                        att: att,
+                                        bgatt: bgatt,
+                                        terminator: terminator)
+        }
     }
     
 //    id    The user's unique username. Case-sensitive. Required.
@@ -103,18 +150,109 @@ struct ItemDisplay {
         }
     }
     
+    func displayItemTime(item: Item) {
+        
+        if let s = item.time {
+            let t = Date(timeIntervalSince1970: TimeInterval(s))
+            let ts = dateFormat.string(from: t)
+            ColorConsole.consoleMessage(ts,
+                                        fg: .green1,
+                                        bg: .darkBlue,
+                                        att: [.italic])
+        }
+    }
+    
     func displayItemBriefly(item: Item) {
+
+        // inconsistent. An ask type seems to come over as a story type.
         
-//        switch item.type {
-//        case "comment":
-//            print("")
-//        case "":
-//            print("")
-//        default:
-//            print("")
-//        }
-        
-        if item.type == "comment" {
+        switch item.type {
+            
+        case "comment":
+
+            displayItemTime(item: item)
+            
+            if let s = item.id {
+                message("ID: \(s)")
+            }
+            if let s = item.parent {
+                message("Parent: \(s)")
+            }
+            if let s = item.by {
+                message("By: \(s)")
+            }
+            if let s = item.text {
+                message("Text: \(s)")
+            }
+            return
+            
+        case "story":
+
+            displayItemTime(item: item)
+            
+            if let s = item.title {
+                message("\(s)")
+//                ColorConsole.consoleMessage("\(s)")
+//                ColorConsole.consoleMessage("\(s)",
+//                                            fg: .green1, bg: .darkBlue, att: [.bold, .italic])
+            }
+            if let s = item.url {
+                message("\(s)")
+            }
+           
+            return
+            
+        case "job":
+            
+            displayItemTime(item: item)
+
+            if let s = item.title {
+                message("\(s)")
+            }
+
+            if let s = item.url {
+                message("\(s)")
+            }
+
+
+//            if let s = item.id {
+//                ColorConsole.consoleMessage("ID: \(s)")
+//            }
+//            if let s = item.title {
+//                ColorConsole.consoleMessage("title: \(s)")
+//            }
+//            if let s = item.by {
+//                ColorConsole.consoleMessage("by: \(s)")
+//            }
+//            if let s = item.url {
+//                ColorConsole.consoleMessage("url: \(s)")
+//            }
+//            if let s = item.score {
+//                ColorConsole.consoleMessage("score: \(s)")
+//            }
+            return
+            
+        case "poll":
+
+            if let s = item.id {
+                message("ID: \(s)")
+            }
+            if let s = item.parent {
+                message("Parent: \(s)")
+            }
+            if let s = item.by {
+                message("By: \(s)")
+            }
+            if let s = item.text {
+                message("Text: \(s)")
+            }
+            return
+            
+        case "ask":
+            
+            // never gets here
+            
+            print("ask")
             if let s = item.id {
                 ColorConsole.consoleMessage("ID: \(s)")
             }
@@ -128,119 +266,145 @@ struct ItemDisplay {
                 ColorConsole.consoleMessage("Text: \(s)")
             }
             return
+            
+        case "user":
+            print("user")
+            
+        default:
+            print("huh? \(item.type!)")
         }
         
-        if let s = item.title {
-            //Color256.print(s, fg: .green1, bg: .darkBlue, att: [.bold, .italic])
-            ColorConsole.consoleMessage("\(s)")
-        }
-        if let s = item.url {
-            //Color256.print(s, fg: .green, bg: .darkBlue, att: [.italic])
-            ColorConsole.consoleMessage("\(s)")
-        }
+       
     }
+
+   
     
     func displayItemFully(item: Item) {
         
-        if let s = item.time {
-            let t = Date(timeIntervalSince1970: TimeInterval(s))
-            let ts = dateFormat.string(from: t)
-            ColorConsole.consoleMessage(ts, fg: .green1, bg: .darkBlue, att: [.italic])
-            //ColorConsole.consoleMessage(ts)
-        }
+        displayItemTime(item: item)
+        
         
         if let s = item.id {
-            ColorConsole.consoleMessage("ID: \(s)")
+            message("ID: \(s)")
         }
         
         if let s = item.type {
-            ColorConsole.consoleMessage("Type: \(s)")
+            message("Type: \(s)")
         }
         
         if let s = item.title {
             // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-            ColorConsole.consoleMessage(s)
+            message(s)
         }
         
         if let s = item.by {
             // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-            ColorConsole.consoleMessage(s)
+            message(s)
         }
         
         if let s = item.text {
-            ColorConsole.consoleMessage(s)
+            message(s)
         }
         
         if let s = item.url {
             // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-            ColorConsole.consoleMessage(s)
+            message(s)
         }
     }
     
     func displayItemProlix(item: Item) {
         
-        if let s = item.time {
-            let t = Date(timeIntervalSince1970: TimeInterval(s))
-            let ts = dateFormat.string(from: t)
-            // Color256.print(ts, fg: .green1, bg: .darkBlue, att: [.italic])
-            ColorConsole.consoleMessage(ts)
-        }
+        displayItemTime(item: item)
         
         if let s = item.id {
-            ColorConsole.consoleMessage("ID: \(s)")
+            message("ID: \(s)")
         }
         if let s = item.parent {
-            ColorConsole.consoleMessage("Parent: \(s)")
+            message("Parent: \(s)")
         }
         
         if let s = item.type {
-            ColorConsole.consoleMessage("Type: \(s)")
+            message("Type: \(s)")
         }
         
         if let s = item.title {
             // Color256.print(s, fg: .green1, bg: .darkBlue, att: [.italic])
-            ColorConsole.consoleMessage("title: \(s)")
+            message("title: \(s)")
         }
         
         if let s = item.by {
-            ColorConsole.consoleMessage("by: \(s)")
+            message("by: \(s)")
         }
 
         if let s = item.descendants {
-            ColorConsole.consoleMessage("descendants: \(s)")
+            message("descendants: \(s)")
         }
         
         if let s = item.kids {
-            ColorConsole.consoleMessage("kids: \(s)")
+            message("kids: \(s)")
         }
         
         if let s = item.score {
-            ColorConsole.consoleMessage("score: \(s)")
+            message("score: \(s)")
         }
 
         if let s = item.deleted {
-            ColorConsole.consoleMessage("deleted: \(s)")
+            message("deleted: \(s)")
         }
 
         if let s = item.dead {
-            ColorConsole.consoleMessage("dead: \(s)")
+            message("dead: \(s)")
         }
         
         if let s = item.poll {
-            ColorConsole.consoleMessage("poll: \(s)")
+            message("poll: \(s)")
         }
         if let s = item.parts {
-            ColorConsole.consoleMessage("parts: \(s)")
+            message("parts: \(s)")
         }
         
         if let s = item.text {
-            ColorConsole.consoleMessage("Text: \(s)")
+            message("Text: \(s)")
         }
         
         if let s = item.url {
-            ColorConsole.consoleMessage(s)
+            message(s)
         }
     }
 
+    
+}
+
+
+// MARK: Color Palette
+extension ItemDisplay {
+    
+//    lazy var colorPalette: ColorPalette = {
+//        return Self.decodeColorPalette()
+//    }()
+    
+    static func decodeColorPalette() -> ColorPalette {
+        let basename = "colorPalette"
+        let decoder = JSONDecoder()
+        let path = Bundle.module.path(forResource: basename, ofType: "json")!
+        let data = try! Data(contentsOf: URL(fileURLWithPath: path))
+        let decoded = try! decoder.decode(ColorPalette.self, from: data)
+        return decoded
+    }
+    
+//    func testpal() {
+//        let c = colorPalette.colors[0]
+//        Color24.DEFAULT_FG = "#\(c.hex)"
+//        
+//        print(Color24.fgString("Astronomical Twilight Begin", paletteColor: c))
+//
+//        Logger.ui.debug("showing colors \(c.name, privacy: .public)")
+//        
+//        print(Color24.fgString("\(colorPalette.colors[0].name)", paletteColor: colorPalette.colors[0]))
+//        print(Color24.fgString("\(colorPalette.colors[1].name)", paletteColor: colorPalette.colors[1]))
+//        print(Color24.fgString("\(colorPalette.colors[2].name)", paletteColor: colorPalette.colors[2]))
+//        print(Color24.fgString("\(colorPalette.colors[3].name)", paletteColor: colorPalette.colors[3]))
+//        print(Color24.fgString("\(colorPalette.colors[4].name)", paletteColor: colorPalette.colors[4]))
+//    }
     
 }

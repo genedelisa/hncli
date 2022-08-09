@@ -32,6 +32,9 @@ class Preferences {
         case numberOfRuns = "number-of-runs"
         case foregroundColorName = "foreground-color-name"
         case backgroundColorName = "background-color-name"
+        case foregroundColorHex = "foreground-color-hex"
+        case backgroundColorHex = "background-color-hex"
+
         case fetchLimit = "fetch-limit"
         case verbose
         case brief
@@ -103,6 +106,24 @@ class Preferences {
         }
     }
     
+    var foregroundColorHex: String? {
+        set {
+            userDefaults.set(newValue, forKey: Keys.foregroundColorHex.rawValue)
+        }
+        get {
+            userDefaults.string(forKey: Keys.foregroundColorHex.rawValue)
+        }
+    }
+    
+    var backgroundColorHex: String? {
+        set {
+            userDefaults.set(newValue, forKey: Keys.backgroundColorHex.rawValue)
+        }
+        get {
+            userDefaults.string(forKey: Keys.backgroundColorHex.rawValue)
+        }
+    }
+    
     var verbose: Bool {
         set {
             userDefaults.set(newValue, forKey: Keys.verbose.rawValue)
@@ -149,6 +170,8 @@ class Preferences {
         userDefaults.register(defaults: [
             Keys.foregroundColorName.rawValue: "gold1",
             Keys.backgroundColorName.rawValue: "blue",
+            Keys.foregroundColorHex.rawValue: Color24.DEFAULT_FG,
+            Keys.backgroundColorHex.rawValue: Color24.DEFAULT_BG,
             Keys.verbose.rawValue: false,
             Keys.brief.rawValue: true,
             Keys.fetchLimit.rawValue: 5,
