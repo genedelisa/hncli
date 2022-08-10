@@ -58,6 +58,15 @@ struct ItemDisplay {
     static var useHex = false
     static var useCss = false
     
+    
+    static var foreground: String?
+    static var background: String?
+    static var foregroundHex: String?
+    static var backgroundHex: String?
+    static var foregroundCss: String?
+    static var backgroundCss: String?
+
+    
     static func setupColors(foreground: String? = nil, background: String? = nil) {
         ColorConsole.setupColors(foreground: foreground, background: background)
     }
@@ -83,21 +92,44 @@ struct ItemDisplay {
                  fgHex: String? = nil,
                  bgHex: String? = nil,
                  terminator: String = "\n") {
+
+
+        //print("\(#function)")
         
         if Self.useHex {
-           // print("printing hex")
-            ColorConsole.consoleMessageHex("\(s)",
-                                           fgHex: fgHex == nil ? Color24.DEFAULT_FG : fgHex!,
-                                           bgHex: bgHex == nil ? Color24.DEFAULT_BG : bgHex!,
-                                           terminator: terminator)
+
+//            print("printing hex Color24.DEFAULT_FG \(Color24.DEFAULT_FG)")
+//            print("printing hex fgHex \(String(describing: fgHex))")
+//            print("printing Self.foregroundHex \(String(describing: Self.foregroundHex))")
+//            print("printing Self.backgroundHex \(String(describing: Self.backgroundHex))")
+            //ColorConsole.consoleMessage("np \(s)")
+
+
+//            ColorConsole.consoleMessageHex("\(s)",
+//                                           fgHex: fgHex == nil ? Color24.DEFAULT_FG : fgHex!,
+//                                           bgHex: bgHex == nil ? Color24.DEFAULT_BG : bgHex!,
+//                                           terminator: terminator)
+            
 //            ColorConsole.consoleMessageHex("\(s)",
 //                                           fgHex: fgHex,
 //                                           bgHex: bgHex,
 //                                           terminator: terminator)
+            
+//            ColorConsole.consoleMessageHex("\(s)",
+//                                           fgHex: Self.foregroundHex,
+//                                           bgHex: Self.backgroundHex,
+//                                           terminator: terminator)
+            
+            Color24.printHex("\(s)",
+                          fgHex: Self.foregroundHex,
+                          bgHex: Self.backgroundHex,
+                          terminator: terminator)
+            
         } else if Self.useCss {
-//            print("printing css")
 
-            Color24.print(s)
+                Color24.print(s,
+                              fgColorName: Self.foregroundCss,
+                              bgColorName: Self.backgroundCss)
                                            
         } else {
            // print("printing neither hex nor css")
@@ -192,6 +224,7 @@ struct ItemDisplay {
             
             if let s = item.title {
                 message("\(s)")
+                
 //                ColorConsole.consoleMessage("\(s)")
 //                ColorConsole.consoleMessage("\(s)",
 //                                            fg: .green1, bg: .darkBlue, att: [.bold, .italic])
@@ -407,4 +440,20 @@ extension ItemDisplay {
 //        print(Color24.fgString("\(colorPalette.colors[4].name)", paletteColor: colorPalette.colors[4]))
 //    }
     
+}
+
+extension ColorConsole {
+    public static func consoleMessage(_ message: String,
+                                      fgHex: String = Color24.DEFAULT_FG,
+                                      bgHex: String = Color24.DEFAULT_BG,
+                                      terminator: String = "\n") {
+        
+        print("hey default fg \(Color24.DEFAULT_FG)")
+        Color24.printHex(message,
+                      fgHex: fgHex,
+                      bgHex: bgHex,
+                      terminator: terminator)
+
+        
+    }
 }

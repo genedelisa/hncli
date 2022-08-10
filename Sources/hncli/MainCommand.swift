@@ -354,6 +354,14 @@ struct MainCommand: AsyncParsableCommand {
         }
         checkAndSetDefaults()
         
+        ItemDisplay.foregroundHex = self.commonOptions.foregroundHex
+        ItemDisplay.backgroundHex = self.commonOptions.backgroundHex
+        ItemDisplay.foregroundCss = self.commonOptions.foregroundCss
+        ItemDisplay.backgroundCss = self.commonOptions.backgroundCss
+        ItemDisplay.foreground = self.commonOptions.foreground
+        ItemDisplay.background = self.commonOptions.background
+
+        
         ItemDisplay.setupHexColors(foreground: self.commonOptions.foregroundHex,
                                    background: self.commonOptions.backgroundHex)
         

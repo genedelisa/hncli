@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/genedelisa/GDTerminalColor.git",
       "state" : {
-        "revision" : "a68639d9a4e5454338ed89d0e8e2481cc772528a",
-        "version" : "0.1.31"
+        "revision" : "35e82fb76697beeb9e06ca228842761e910f4c5b",
+        "version" : "0.1.35"
       }
     },
     {
